@@ -4,6 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>9a723850-5133-435d-b399-884793bbed3d</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpotifyAPI.Web" Version="7.2.1" />
+  </ItemGroup>
 
 </Project>

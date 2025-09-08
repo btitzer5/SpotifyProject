@@ -1,0 +1,23 @@
+@page
+@model SpotifyProject.Pages.PlaylistsModel
+@{
+    ViewData["Title"] = "Your Playlists";
+}
+<h2>Your Playlists</h2>
+
+@if (Model.Playlists.Count == 0)
+{
+    <p>No playlists found.</p>
+}
+else
+{
+    <ul class="list-group">
+    @foreach (var p in Model.Playlists)
+    {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>@p.Name</span>
+            <span class="badge bg-secondary">@p.Tracks?.Total ?? 0</span>
+        </li>
+    }
+    </ul>
+}

@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using SpotifyProject
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor Http
+
+@{
+    var isAuthed = !string.IsNullOrEmpty(Http.HttpContext?.Session.GetString(Constants.SessionTokensKey));
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,10 +30,29 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
                         </li>
+                        @if (!isAuthed)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Auth/Login">Login with Spotify</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Playlists">Playlists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Auth/Logout">Logout</a>
+                            </li>
+                        }
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Search" asp-route-q="Beatles">Search</a>
                         </li>
                     </ul>
+                    @if (isAuthed)
+                    {
+                        <span class="navbar-text text-success">Signed in</span>
+                    }
                 </div>
             </div>
         </nav>
