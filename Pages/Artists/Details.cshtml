@@ -1,0 +1,80 @@
+@page "{id}"
+@model SpotifyProject.Pages.Artists.DetailsModel
+@{
+    ViewData["Title"] = "Artist";
+}
+
+@if (Model.Artist is null)
+{
+    <p class="text-muted">Artist not found.</p>
+}
+else
+{
+    var img = Model.Artist.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
+    <div class="d-flex align-items-center mb-4">
+        @if (!string.IsNullOrEmpty(img))
+        {
+            <img src="@img" alt="@Model.Artist.Name" width="128" height="128" class="rounded me-3" />
+        }
+        <div>
+            <h2>@Model.Artist.Name</h2>
+            @if (Model.Artist.Followers?.Total is int followers)
+            {
+                <div class="text-muted">@followers.ToString("N0") followers</div>
+            }
+            @if (Model.Artist.Genres?.Any() == true)
+            {
+                <div class="text-muted">Genres: @string.Join(", ", Model.Artist.Genres.Take(5))</div>
+            }
+        </div>
+    </div>
+
+    <h4>Top Tracks</h4>
+    @if (!Model.TopTracks.Any())
+    {
+        <p class="text-muted">No top tracks available.</p>
+    }
+    else
+    {
+        <ol class="list-group list-group-numbered mb-4">
+        @foreach (var t in Model.TopTracks)
+        {
+            var primaryArtist = t.Artists?.FirstOrDefault()?.Name ?? "Unknown artist";
+            <li class="list-group-item d-flex justify-content-between">
+                <span>@t.Name</span>
+                <span class="text-muted">@primaryArtist</span>
+            </li>
+        }
+        </ol>
+    }
+
+    <h4>Albums & Singles</h4>
+    @if (!Model.Albums.Any())
+    {
+        <p class="text-muted">No albums available.</p>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+        @foreach (var a in Model.Albums)
+        {
+            var cover = a.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(cover))
+                    {
+                        <img src="@cover" class="card-img-top" alt="@a.Name" />
+                    }
+                    <div class="card-body">
+                        <h6 class="card-title">@a.Name</h6>
+                        @if (a.ReleaseDate is string rd)
+                        {
+                            <div class="text-muted small">@rd</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+    }
+}

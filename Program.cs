@@ -1,5 +1,7 @@
 using SpotifyAPI.Web;
 using SpotifyProject;
+using SpotifyProject.Models;
+using SpotifyProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +12,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
 
 // Options binding
-builder.Services.Configure<SpotifyOptions>(
-    builder.Configuration.GetSection(Constants.SpotifySection));
+builder.Services.Configure<SpotifyOptions>(builder.Configuration.GetSection("Spotify"));
 
 // Base config for Spotify client
 builder.Services.AddSingleton(SpotifyClientConfig.CreateDefault());
@@ -19,6 +20,7 @@ builder.Services.AddSingleton(SpotifyClientConfig.CreateDefault());
 // App services
 builder.Services.AddScoped<SpotifyAuthService>();
 builder.Services.AddScoped<SpotifyClientFactory>();
+builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
 
 var app = builder.Build();
 
