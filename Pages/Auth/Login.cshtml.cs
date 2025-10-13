@@ -17,7 +17,9 @@ public class LoginModel : PageModel
             Scopes.PlaylistReadPrivate,
             Scopes.PlaylistReadCollaborative,
             Scopes.UserReadEmail,
-            Scopes.UserLibraryRead
+            Scopes.UserLibraryRead,
+            Scopes.UserReadPrivate,        // Required for user profile data
+            Scopes.UserTopRead             // Required for top tracks and artists
         });
 
         return Redirect(uri.ToString());

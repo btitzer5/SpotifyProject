@@ -21,6 +21,7 @@ builder.Services.AddSingleton(SpotifyClientConfig.CreateDefault());
 builder.Services.AddScoped<SpotifyAuthService>();
 builder.Services.AddScoped<SpotifyClientFactory>();
 builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
+builder.Services.AddScoped<SpotifyService>();
 
 var app = builder.Build();
 
