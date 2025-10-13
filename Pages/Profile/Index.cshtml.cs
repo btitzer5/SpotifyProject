@@ -22,23 +22,26 @@ namespace SpotifyProject.Pages.Profile
         public Paging<FullTrack> TopTracks { get; set; }
         public Paging<FullArtist> TopArtists { get; set; }
         public List<SimpleAlbum> TopAlbums { get; set; }
-        public string TimeRange { get; set; } = "medium_term"; // Options: short_term, medium_term, long_term
+        public string TimeRange { get; set; } = "medium_term";
+        public int Limit { get; set; } = 10;
         public string ErrorMessage { get; set; }
 
-        public async Task OnGetAsync(string timeRange = "medium_term")
+        public async Task OnGetAsync(string timeRange = "medium_term", int limit = 10)
         {
             TimeRange = timeRange;
+            // Cap the limit at 50 (Spotify's maximum)
+            Limit = Math.Min(limit, 50);
             
             try
             {
                 // Get current user profile
                 CurrentUser = await _spotifyService.GetCurrentUserProfile();
                 
-                // Get user's top tracks
-                TopTracks = await _spotifyService.GetUserTopTracks(limit: 10, timeRange: TimeRange);
+                // Get user's top tracks with the capped limit
+                TopTracks = await _spotifyService.GetUserTopTracks(limit: Limit, timeRange: TimeRange);
                 
-                // Get user's top artists
-                TopArtists = await _spotifyService.GetUserTopArtists(limit: 10, timeRange: TimeRange);
+                // Get user's top artists with the capped limit
+                TopArtists = await _spotifyService.GetUserTopArtists(limit: Limit, timeRange: TimeRange);
                 
                 // Extract top albums from top tracks
                 if (TopTracks?.Items != null)
@@ -47,7 +50,7 @@ namespace SpotifyProject.Pages.Profile
                         .Select(t => t.Album)
                         .GroupBy(a => a.Id)
                         .Select(g => g.First())
-                        .Take(10)
+                        .Take(Limit)
                         .ToList();
                 }
             }

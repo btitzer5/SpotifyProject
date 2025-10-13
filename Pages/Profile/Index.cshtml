@@ -46,22 +46,40 @@
             </div>
         </div>
         
-        <!-- Time Range Selection -->
-        <div class="mb-4">
-            <h4>Listening Activity</h4>
-            <div class="btn-group" role="group">
-                <a asp-page="./Index" asp-route-timeRange="short_term" 
-                   class="btn @(Model.TimeRange == "short_term" ? "btn-primary" : "btn-outline-primary")">
-                    Last 4 Weeks
-                </a>
-                <a asp-page="./Index" asp-route-timeRange="medium_term" 
-                   class="btn @(Model.TimeRange == "medium_term" ? "btn-primary" : "btn-outline-primary")">
-                    Last 6 Months
-                </a>
-                <a asp-page="./Index" asp-route-timeRange="long_term" 
-                   class="btn @(Model.TimeRange == "long_term" ? "btn-primary" : "btn-outline-primary")">
-                    All Time
-                </a>
+        <!-- Controls Section -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h4>Listening Activity</h4>
+                <div class="btn-group" role="group">
+                    <a asp-page="./Index" asp-route-timeRange="short_term" asp-route-limit="@Model.Limit"
+                       class="btn @(Model.TimeRange == "short_term" ? "btn-primary" : "btn-outline-primary")">
+                        Last 4 Weeks
+                    </a>
+                    <a asp-page="./Index" asp-route-timeRange="medium_term" asp-route-limit="@Model.Limit"
+                       class="btn @(Model.TimeRange == "medium_term" ? "btn-primary" : "btn-outline-primary")">
+                        Last 6 Months
+                    </a>
+                    <a asp-page="./Index" asp-route-timeRange="long_term" asp-route-limit="@Model.Limit"
+                       class="btn @(Model.TimeRange == "long_term" ? "btn-primary" : "btn-outline-primary")">
+                        All Time
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4>Display Options</h4>
+                <div class="btn-group" role="group">
+                    <a asp-page="./Index" asp-route-timeRange="@Model.TimeRange" asp-route-limit="10"
+                       class="btn @(Model.Limit == 10 ? "btn-success" : "btn-outline-success")">
+                        Top 10
+                    </a>
+                    <a asp-page="./Index" asp-route-timeRange="@Model.TimeRange" asp-route-limit="50"
+                       class="btn @(Model.Limit == 50 ? "btn-success" : "btn-outline-success")">
+                        Top 50
+                    </a>
+                </div>
+                <small class="text-muted d-block mt-1">
+                    Currently showing top @Model.Limit items
+                </small>
             </div>
         </div>
 
@@ -71,9 +89,9 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Your Top Tracks</h5>
+                        <h5 class="mb-0">Your Top Tracks (@Model.TopTracks?.Items?.Count ?? 0)</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
                         @if (Model.TopTracks?.Items?.Any() == true)
                         {
                             <ol class="list-group list-group-numbered">
@@ -107,9 +125,9 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Your Top Artists</h5>
+                        <h5 class="mb-0">Your Top Artists (@Model.TopArtists?.Items?.Count ?? 0)</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
                         @if (Model.TopArtists?.Items?.Any() == true)
                         {
                             <ol class="list-group list-group-numbered">
@@ -143,9 +161,9 @@
             <div class="col-md-4 mb-4">
                 <div class="card h-100">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Your Top Albums</h5>
+                        <h5 class="mb-0">Your Top Albums (@Model.TopAlbums?.Count ?? 0)</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
                         @if (Model.TopAlbums?.Any() == true)
                         {
                             <ol class="list-group list-group-numbered">
