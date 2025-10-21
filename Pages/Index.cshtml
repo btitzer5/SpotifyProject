@@ -1,59 +1,112 @@
 ﻿@page
-@model IndexModel
+@model SpotifyProject.Pages.IndexModel
 @{
     ViewData["Title"] = "Home";
 }
 
-<div class="hero-section">
-    <h1>Musical Analytics</h1>
-    <p>Discover insights about your listening habits, find new music, and explore detailed artist information with our advanced Spotify analytics platform.</p>
-    <a href="/Auth/Login" class="spotify-btn btn btn-lg">Get Started</a>
+<div class="hero-section spotify-card text-center mb-4">
+    <h1>Music Analytics</h1>
+    <p class="text-muted">Explore artists, albums, tracks and your listening habits — fast.</p>
+
+    <form method="get" action="/Search" class="d-flex justify-content-center mt-3" style="gap:8px;max-width:720px;margin:0 auto;">
+        <input name="q" class="form-control" type="search" placeholder="Search artists, albums or tracks..." value="" />
+        <button class="spotify-btn" type="submit">Search</button>
+    </form>
+
+    <div class="d-flex justify-content-center gap-2 mt-3">
+        <a class="btn btn-outline-success" asp-page="/Browse">Browse New Releases</a>
+        <a class="btn btn-outline-success" asp-page="/Playlists">Your Playlists</a>
+        <a class="btn btn-outline-success" asp-page="/Profile/Index">Profile</a>
+    </div>
 </div>
 
-<div class="spotify-container">
-    <div class="feature-grid">
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-graph-up"></i>
-            </div>
-            <h3>Listening Metrics</h3>
-            <p>View detailed analytics about your listening habits, most played tracks, favorite genres, and discover patterns in your music preferences.</p>
-            <a href="#" class="btn spotify-btn">Learn More</a>
+<section class="mb-4">
+    <h3 class="mb-3">New Releases</h3>
+
+    @if (!Model.NewReleases.Any())
+    {
+        <p class="text-muted">No new releases available right now.</p>
+    }
+    else
+    {
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var a in Model.NewReleases)
+            {
+                <div class="col">
+                    <div class="card h-100 spotify-card">
+                        @if (!string.IsNullOrEmpty(a.ImageUrl))
+                        {
+                            <a href="/Album/@a.Id"><img src="@a.ImageUrl" class="card-img-top" alt="@a.Name" /></a>
+                        }
+                        <div class="card-body">
+                            <h6 class="card-title text-truncate"><a href="/Album/@a.Id" class="text-decoration-none">@a.Name</a></h6>
+                            <div class="text-muted small">@a.Artist</div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
-        
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-search"></i>
-            </div>
-            <h3>Advanced Search</h3>
-            <p>Find music by specific parameters like BPM, key, genre combinations, and mood. Discover new music tailored to your exact preferences.</p>
-            <a href="/Search" class="btn spotify-btn">Try Search</a>
+    }
+</section>
+
+@if (Model.IsAuthenticated)
+{
+    <section class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="m-0">Your Top Artists</h3>
+            <a class="text-muted small" asp-page="/Profile/Index">View profile</a>
         </div>
-        
-        <div class="feature-card">
-            <div class="feature-icon">
-                <i class="bi bi-people"></i>
+
+        @if (!Model.TopArtists.Any())
+        {
+            <p class="text-muted">No artist data available.</p>
+        }
+        else
+        {
+            <div class="row row-cols-2 row-cols-md-6 g-2 mb-3">
+                @foreach (var artist in Model.TopArtists)
+                {
+                    <div class="col text-center">
+                        <a href="/Artists/Details/@artist.Id" class="text-decoration-none d-block">
+                            <img src="@artist.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url" alt="@artist.Name" class="rounded mb-1" style="width:80px;height:80px;object-fit:cover;border:1px solid rgba(255,255,255,0.04)" />
+                            <div class="text-muted small text-truncate" style="max-width:90px;">@artist.Name</div>
+                        </a>
+                    </div>
+                }
             </div>
-            <h3>Artist Insights</h3>
-            <p>Explore comprehensive profiles of your favorite artists, including discographies, related artists, and deep analytics about their musical style.</p>
-            <a href="#" class="btn spotify-btn">Explore Artists</a>
+        }
+    </section>
+
+    <section class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="m-0">Your Top Tracks</h3>
+            <a class="text-muted small" asp-page="/Profile/Index">View profile</a>
         </div>
+
+        @if (!Model.TopTracks.Any())
+        {
+            <p class="text-muted">No track data available.</p>
+        }
+        else
+        {
+            <ol class="list-group list-group-numbered">
+                @foreach (var t in Model.TopTracks)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <a href="/Track/@t.Id" class="fw-medium">@t.Name</a>
+                            <div class="text-muted small">@string.Join(", ", t.Artists.Select(a => a.Name))</div>
+                        </div>
+                        <div class="text-muted small">@TimeSpan.FromMilliseconds(t.DurationMs).ToString(@"m\:ss")</div>
+                    </li>
+                }
+            </ol>
+        }
+    </section>
+}
+else
+{
+    <div class="spotify-card p-3 mb-4">
+        <p class="mb-0">You are not signed in. <a asp-page="/Auth/Login">Connect with Spotify</a> to see personalized data.</p>
     </div>
-    
-    <div class="stats-display mt-5">
-        <div class="row text-center">
-            <div class="col-md-4">
-                <h2 class="display-4 fw-bold">50M+</h2>
-                <p class="text-muted">Tracks Analyzed</p>
-            </div>
-            <div class="col-md-4">
-                <h2 class="display-4 fw-bold">200K+</h2>
-                <p class="text-muted">Users</p>
-            </div>
-            <div class="col-md-4">
-                <h2 class="display-4 fw-bold">3.5M+</h2>
-                <p class="text-muted">Artist Profiles</p>
-            </div>
-        </div>
-    </div>
-</div>
+}

@@ -19,13 +19,24 @@ else
                 <div class="card h-100">
                     @if (!string.IsNullOrWhiteSpace(a.ImageUrl))
                     {
-                        <img class="card-img-top" src="@a.ImageUrl" alt="@a.Name" />
+                        <a href="/Album/@a.Id"><img class="card-img-top" src="@a.ImageUrl" alt="@a.Name" /></a>
                     }
                     <div class="card-body">
-                        <h6 class="card-title text-truncate">@a.Name</h6>
+                        <h6 class="card-title text-truncate">
+                            <a href="/Album/@a.Id" class="text-decoration-none text-dark">@a.Name</a>
+                        </h6>
                         @if (!string.IsNullOrWhiteSpace(a.Artist))
                         {
-                            <div class="text-muted small">@a.Artist</div>
+                            <div class="text-muted small">
+                                @if (!string.IsNullOrWhiteSpace(a.ArtistId))
+                                {
+                                    <a href="/Artists/Details/@a.ArtistId" class="text-muted">@a.Artist</a>
+                                }
+                                else
+                                {
+                                    @a.Artist
+                                }
+                            </div>
                         }
                     </div>
                     <div class="card-footer bg-transparent border-0">

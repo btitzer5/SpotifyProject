@@ -10,71 +10,85 @@
 }
 else
 {
-    var img = Model.Artist.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
-    <div class="d-flex align-items-center mb-4">
-        @if (!string.IsNullOrEmpty(img))
-        {
-            <img src="@img" alt="@Model.Artist.Name" width="128" height="128" class="rounded me-3" />
-        }
-        <div>
-            <h2>@Model.Artist.Name</h2>
-            @if (Model.Artist.Followers?.Total is int followers)
+    <div class="entity-header card mb-4 p-3 d-flex gap-3">
+        <div class="entity-image">
+            @if (!string.IsNullOrEmpty(Model.Artist.Images?.FirstOrDefault()?.Url))
             {
-                <div class="text-muted">@followers.ToString("N0") followers</div>
-            }
-            @if (Model.Artist.Genres?.Any() == true)
-            {
-                <div class="text-muted">Genres: @string.Join(", ", Model.Artist.Genres.Take(5))</div>
+                <img src="@Model.Artist.Images.OrderByDescending(i => i.Width).First().Url" alt="@Model.Artist.Name" class="img-fluid rounded" style="max-height:160px" />
             }
         </div>
-    </div>
-
-    <h4>Top Tracks</h4>
-    @if (!Model.TopTracks.Any())
-    {
-        <p class="text-muted">No top tracks available.</p>
-    }
-    else
-    {
-        <ol class="list-group list-group-numbered mb-4">
-        @foreach (var t in Model.TopTracks)
-        {
-            var primaryArtist = t.Artists?.FirstOrDefault()?.Name ?? "Unknown artist";
-            <li class="list-group-item d-flex justify-content-between">
-                <span>@t.Name</span>
-                <span class="text-muted">@primaryArtist</span>
-            </li>
-        }
-        </ol>
-    }
-
-    <h4>Albums & Singles</h4>
-    @if (!Model.Albums.Any())
-    {
-        <p class="text-muted">No albums available.</p>
-    }
-    else
-    {
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-        @foreach (var a in Model.Albums)
-        {
-            var cover = a.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
-            <div class="col">
-                <div class="card h-100">
-                    @if (!string.IsNullOrEmpty(cover))
+        <div class="flex-fill">
+            <div class="d-flex align-items-start justify-content-between">
+                <div>
+                    <h1 class="h3 mb-1">@Model.Artist.Name</h1>
+                    <div class="text-muted small">@string.Join(", ", Model.Artist.Genres ?? new List<string>())</div>
+                </div>
+                <div class="text-end">
+                    @if (!string.IsNullOrEmpty(Model.Artist.Id))
                     {
-                        <img src="@cover" class="card-img-top" alt="@a.Name" />
+                        <a class="spotify-btn btn btn-success btn-sm" target="_blank" rel="noopener" href="https://open.spotify.com/artist/@Model.Artist.Id">Open in Spotify</a>
                     }
-                    <div class="card-body">
-                        <h6 class="card-title">@a.Name</h6>
-                        @if (a.ReleaseDate is string rd)
+                    <div class="mt-2">
+                        <span class="badge bg-secondary">@Model.Artist.Popularity ?? 0%</span>
+                        @if (Model.Artist.Followers?.Total is int followers)
                         {
-                            <div class="text-muted small">@rd</div>
+                            <span class="text-muted ms-2 small">@followers.ToString("N0") followers</span>
                         }
                     </div>
                 </div>
             </div>
-        }
         </div>
-    }
+    </div>
+
+    <section class="mb-4">
+        <h4 class="h5">Top Tracks</h4>
+        @if (!Model.TopTracks.Any())
+        {
+            <p class="text-muted">No top tracks available.</p>
+        }
+        else
+        {
+            <ol class="list-group list-group-numbered mb-3">
+            @foreach (var t in Model.TopTracks)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <a class="fw-semibold" href="/Track/@t.Id">@t.Name</a>
+                        <div class="text-muted small">@string.Join(", ", t.Artists.Select(a => a.Name))</div>
+                    </div>
+                    <div class="text-muted small">@TimeSpan.FromMilliseconds(t.DurationMs).ToString(@"m\:ss")</div>
+                </li>
+            }
+            </ol>
+        }
+    </section>
+
+    <section>
+        <h4 class="h5">Albums & Singles</h4>
+        @if (!Model.Albums.Any())
+        {
+            <p class="text-muted">No albums available.</p>
+        }
+        else
+        {
+            <div class="row g-3">
+            @foreach (var a in Model.Albums)
+            {
+                var cover = a.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
+                <div class="col-6 col-md-3">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrEmpty(cover))
+                        {
+                            <a href="/Album/@a.Id"><img src="@cover" class="card-img-top" alt="@a.Name" /></a>
+                        }
+                        <div class="card-body p-2">
+                            <h6 class="card-title mb-1 text-truncate"><a href="/Album/@a.Id" class="text-decoration-none">@a.Name</a></h6>
+                            <div class="text-muted small">@a.ReleaseDate</div>
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
+        }
+    </section>
 }

@@ -1,11 +1,17 @@
 :root {
   --spotify-green: #1DB954;
+  --spotify-green-2: #1ed760;
   --spotify-black: #191414;
   --spotify-dark-gray: #121212;
   --spotify-light-gray: #282828;
   --spotify-white: #FFFFFF;
-  --spotify-gray-text: #b3b3b3;
+  --spotify-gray-text: #9FD6B0; /* changed to green-tinted light tone for readability and palette harmony */
   --gradient-accent: linear-gradient(135deg, #1DB954, #1ed760);
+  --glass-bg: rgba(255,255,255,0.03);
+  --card-border: rgba(255,255,255,0.04);
+  --muted: rgba(179,179,179,0.8);
+  --accent-glow: 0 8px 24px rgba(29,185,84,0.06);
+  --entity-muted: #BFEED8; /* brighter green-tinted contrast for entity pages (artist/album/track/playlist) */
 }
 
 html {
@@ -84,26 +90,40 @@ body {
 }
 
 .spotify-navbar .navbar-toggler {
-  border-color: var(--spotify-gray-text);
+  border-color: var(--spotify_gray-text);
 }
 
 .spotify-navbar .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(179, 179, 179, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
 
+/* Buttons */
 .spotify-btn {
-  background-color: var(--spotify-green);
+  background: linear-gradient(180deg, var(--spotify-green), var(--spotify-green-2));
   color: var(--spotify-white);
-  border: none;
-  border-radius: 50px;
-  padding: 8px 24px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-weight: 700;
+  transition: transform 150ms ease, box-shadow 150ms ease, opacity 150ms;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(29,185,84,0.08);
 }
 
 .spotify-btn:hover {
-  background-color: #1ed760;
-  transform: scale(1.03);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--accent-glow);
+  opacity: 0.98;
+}
+
+.btn-outline-success {
+  color: var(--spotify-green);
+  border-color: rgba(29,185,84,0.18);
+  background: transparent;
+}
+.btn-outline-success:hover {
+  background: rgba(29,185,84,0.06);
+  color: var(--spotify-white);
 }
 
 /* Main content container */
@@ -117,15 +137,16 @@ body {
 
 /* Card styling */
 .spotify-card {
-  background-color: var(--spotify-light-gray);
-  border-radius: 6px;
-  padding: 20px;
-  transition: all 0.3s ease;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: 8px;
+  padding: 18px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  border: 1px solid var(--card-border);
 }
 
 .spotify-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-6px);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.6);
 }
 
 /* Footer styling */
@@ -179,14 +200,15 @@ body {
 }
 
 .feature-card {
-  background-color: var(--spotify-light-gray);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-radius: 8px;
-  padding: 25px;
+  padding: 20px;
   transition: all 0.3s ease;
   text-align: left;
+  border: 1px solid var(--card-border);
 }
 
-.feature-card:hover {
+feature-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
@@ -198,24 +220,18 @@ body {
   font-size: 1.4rem;
 }
 
-.feature-card p {
+feature-card p {
   color: var(--spotify-gray-text);
-  margin-bottom: 20px;
-}
-
-.feature-icon {
-  font-size: 2.5rem;
-  color: var(--spotify-green);
   margin-bottom: 20px;
 }
 
 /* Stats display */
 .stats-display {
-  background-color: rgba(29, 185, 84, 0.1);
+  background-color: rgba(29, 185, 84, 0.06);
   border-radius: 8px;
   padding: 30px;
   margin-top: 30px;
-  border: 1px solid rgba(29, 185, 84, 0.3);
+  border: 1px solid rgba(29, 185, 84, 0.12);
 }
 
 /* Active nav indicator */
@@ -225,4 +241,107 @@ body {
   position: absolute;
   bottom: 0;
   transition: all 0.3s ease;
+}
+
+/* Entity / detail page improvements (futuristic, dark, sleek) */
+.entity-header {
+  border-radius: .5rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  padding: 18px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+  backdrop-filter: blur(6px);
+}
+
+entity-header .entity-image { flex: 0 0 140px; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
+.entity-header .entity-image img { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255,255,255,0.04); }
+
+.entity-header h1, .entity-header h2, .entity-header h3, .entity-header h4 { margin: 0; color: var(--spotify-white); }
+.entity-header .text-muted { color: var(--spotify-gray-text); }
+
+/* Metadata badges */
+.entity-header .badge {
+  background: rgba(255,255,255,0.03);
+  color: var(--spotify-white);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Lists and track items */
+.list-group-item {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.04);
+  margin-bottom: 8px;
+  border-radius: 8px;
+  transition: transform 140ms ease, box-shadow 140ms ease, background 140ms;
+  padding: 12px 16px;
+}
+
+.list-group-item .text-muted { color: var(--spotify-gray-text); }
+
+.list-group-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  background: linear-gradient(180deg, rgba(29,185,84,0.02), rgba(255,255,255,0.01));
+}
+
+/* Cards in grids (albums, playlists) */
+.card.h-100 {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));
+  border: 1px solid var(--card-border);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.card.h-100:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+}
+
+/* Links */
+a {
+  color: var(--spotify-green);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--spotify-green-2);
+  text-decoration: underline;
+}
+
+/* Small utility adjustments */
+.text-muted.small { color: var(--spotify-gray-text); }
+.fw-medium { font-weight: 600; color: var(--spotify-white);}
+
+/* Homepage / card text color: match entity pages for better contrast */
+.hero-section .text-muted,
+.card .card-body .text-muted,
+.spotify-card .text-muted,
+.feature-card .text-muted,
+.list-group .text-muted
+{
+  color: var(--entity-muted) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .entity-header { flex-direction: column; align-items: flex-start; }
+  .entity-header .entity-image { width: 100%; height: auto; }
+}
+
+/* preserve previously added small UI improvements */
+.entity-header { border-radius: .375rem; }
+.entity-header .entity-image img { object-fit: cover; }
+.entity-header h1, .entity-header h2, .entity-header h3, .entity-header h4 { margin: 0; }
+.spotify-btn { white-space: nowrap; }
+
+/* Improve readability on entity/detail pages — overrides only for those components */
+.entity-header .text-muted,
+.entity-header .text-muted.small,
+.list-group-item .text-muted,
+.text-muted.small.entity, /* optional hook if needed */
+.entity-meta, /* optional hook if you want to add a class in Razor later */
+.entity-header .card-body .text-muted
+{
+  color: var(--entity-muted) !important;
 }

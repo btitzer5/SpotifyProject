@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using SpotifyAPI.Web;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpotifyProject.Pages
 {
@@ -23,6 +26,7 @@ namespace SpotifyProject.Pages
             public string Name { get; init; } = string.Empty;
             public string? ImageUrl { get; init; }
             public string? Artist { get; init; }
+            public string? ArtistId { get; init; }   // added to support linking to artist details
         }
 
         public List<AlbumItem> NewReleases { get; private set; } = new();
@@ -45,6 +49,7 @@ namespace SpotifyProject.Pages
                     Id = a.Id,
                     Name = a.Name,
                     Artist = a.Artists?.FirstOrDefault()?.Name,
+                    ArtistId = a.Artists?.FirstOrDefault()?.Id,
                     ImageUrl = a.Images?.OrderByDescending(img => img.Width).FirstOrDefault()?.Url
                 }).ToList();
             }

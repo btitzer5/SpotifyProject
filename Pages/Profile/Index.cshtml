@@ -99,15 +99,15 @@
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            <div class="fw-bold">@track.Name</div>
+                                            <div class="fw-bold"><a href="/Track/@track.Id">@track.Name</a></div>
                                             @if (track.Artists?.Any() == true)
                                             {
-                                                <small>@track.Artists.First().Name</small>
+                                                <small><a href="/Artists/Details/@track.Artists.First().Id">@track.Artists.First().Name</a></small>
                                             }
                                         </div>
                                         @if (track.Album?.Images?.Any() == true)
                                         {
-                                            <img src="@track.Album.Images.Last().Url" width="40" height="40" class="rounded" alt="@track.Album.Name" />
+                                            <a href="/Album/@track.Album.Id"><img src="@track.Album.Images.Last().Url" width="40" height="40" class="rounded" alt="@track.Album.Name" /></a>
                                         }
                                     </li>
                                 }
@@ -135,7 +135,7 @@
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            <div class="fw-bold">@artist.Name</div>
+                                            <div class="fw-bold"><a href="/Artists/Details/@artist.Id">@artist.Name</a></div>
                                             @if (artist.Genres?.Any() == true)
                                             {
                                                 <small class="text-muted">@string.Join(", ", artist.Genres.Take(2))</small>
@@ -143,7 +143,7 @@
                                         </div>
                                         @if (artist.Images?.Any() == true)
                                         {
-                                            <img src="@artist.Images.Last().Url" width="40" height="40" class="rounded-circle" alt="@artist.Name" />
+                                            <a href="/Artists/Details/@artist.Id"><img src="@artist.Images.Last().Url" width="40" height="40" class="rounded-circle" alt="@artist.Name" /></a>
                                         }
                                     </li>
                                 }
@@ -171,15 +171,15 @@
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            <div class="fw-bold">@album.Name</div>
+                                            <div class="fw-bold"><a href="/Album/@album.Id">@album.Name</a></div>
                                             @if (album.Artists?.Any() == true)
                                             {
-                                                <small class="text-muted">@album.Artists.First().Name</small>
+                                                <small class="text-muted"><a href="/Artists/Details/@album.Artists.First().Id">@album.Artists.First().Name</a></small>
                                             }
                                         </div>
                                         @if (album.Images?.Any() == true)
                                         {
-                                            <img src="@album.Images.Last().Url" width="40" height="40" class="rounded" alt="@album.Name" />
+                                            <a href="/Album/@album.Id"><img src="@album.Images.Last().Url" width="40" height="40" class="rounded" alt="@album.Name" /></a>
                                         }
                                     </li>
                                 }

@@ -21,20 +21,22 @@ namespace SpotifyProject.Services
             _spotifyClientFactory = spotifyClientFactory;
         }
 
-        private SpotifyClient GetSpotifyClient()
-        {
-            return _spotifyClientFactory.CreateAppClient();
-        }
+        // App-only client (public endpoints)
+        private SpotifyClient GetAppClient() => _spotifyClientFactory.CreateAppClient();
 
+        // User-authenticated client (private endpoints) — will throw if user not authenticated
+        private SpotifyClient GetUserClient() => _spotifyClientFactory.CreateUserClient();
+
+        // USER-SPECIFIC endpoints (require authenticated user)
         public async Task<PrivateUser> GetCurrentUserProfile()
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetUserClient();
             return await spotify.UserProfile.Current();
         }
 
         public async Task<Paging<FullTrack>> GetUserTopTracks(int limit = 10, string timeRange = "medium_term")
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetUserClient();
             
             try
             {
@@ -83,7 +85,7 @@ namespace SpotifyProject.Services
 
         public async Task<Paging<FullArtist>> GetUserTopArtists(int limit = 10, string timeRange = "medium_term")
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetUserClient();
             
             try
             {
@@ -130,49 +132,61 @@ namespace SpotifyProject.Services
             }
         }
 
-        // ---------- New convenience read methods for navigation pages ----------
+        // Get current user's playlists (requires authenticated user)
+        public async Task<Paging<FullPlaylist>> GetCurrentUserPlaylists(int limit = 50, int offset = 0)
+        {
+            var spotify = GetUserClient();
+            // Use the Playlists.CurrentUsers request to fetch the signed-in user's playlists
+            var request = new PlaylistCurrentUsersRequest
+            {
+                Limit = Math.Min(limit, 50),
+                Offset = Math.Max(offset, 0)
+            };
+            return await spotify.Playlists.CurrentUsers(request);
+        }
 
+        // ---------- Public app-level methods (no user token required) ----------
         public async Task<FullArtist> GetArtist(string artistId)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             return await spotify.Artists.Get(artistId);
         }
 
         public async Task<List<SimpleAlbum>> GetArtistAlbums(string artistId, int limit = 50)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             var response = await spotify.Artists.GetAlbums(artistId, new ArtistsAlbumsRequest { Limit = Math.Min(limit, 50) });
             return response.Items.ToList();
         }
 
         public async Task<FullAlbum> GetAlbum(string albumId)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             return await spotify.Albums.Get(albumId);
         }
 
         public async Task<List<SimpleTrack>> GetAlbumTracks(string albumId, int limit = 50)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             var response = await spotify.Albums.GetTracks(albumId, new AlbumTracksRequest { Limit = Math.Min(limit, 50) });
             return response.Items.ToList();
         }
 
         public async Task<FullTrack> GetTrack(string trackId)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             return await spotify.Tracks.Get(trackId);
         }
 
         public async Task<FullPlaylist> GetPlaylist(string playlistId)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             return await spotify.Playlists.Get(playlistId);
         }
 
         public async Task<List<FullTrack>> GetPlaylistTracks(string playlistId, int limit = 100)
         {
-            var spotify = GetSpotifyClient();
+            var spotify = GetAppClient();
             var response = await spotify.Playlists.GetItems(playlistId, new PlaylistGetItemsRequest { Limit = Math.Min(limit, 100) });
             var tracks = response.Items
                 .Where(i => i.Track is FullTrack)
