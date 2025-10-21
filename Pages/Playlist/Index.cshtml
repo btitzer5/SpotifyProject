@@ -1,0 +1,27 @@
+﻿@page "{id}"
+@model SpotifyProject.Pages.Playlist.IndexModel
+@{
+    ViewData["Title"] = Model.Playlist?.Name ?? "Playlist";
+}
+
+@if (Model.Playlist != null)
+{
+    <h2>@Model.Playlist.Name</h2>
+    <p><strong>Owner:</strong> @Model.Playlist.Owner?.DisplayName</p>
+    <p>@Model.Playlist.Description</p>
+
+    <h4>Tracks</h4>
+    <ol>
+        @foreach (var t in Model.Tracks)
+        {
+            <li>
+                <a asp-page="/Track" asp-route-id="@t.Id">@t.Name</a>
+                <small class="text-muted"> — @string.Join(", ", t.Artists.Select(a => a.Name))</small>
+            </li>
+        }
+    </ol>
+}
+else
+{
+    <p>Playlist not found.</p>
+}

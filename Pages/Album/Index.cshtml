@@ -1,0 +1,32 @@
+﻿@page "{id}"
+@model SpotifyProject.Pages.Album.IndexModel
+@{
+    ViewData["Title"] = Model.Album?.Name ?? "Album";
+}
+
+@if (Model.Album != null)
+{
+    <div class="d-flex mb-3">
+        <img src="@Model.Album.Images?.FirstOrDefault()?.Url" alt="@Model.Album.Name" style="max-height:160px" class="me-3" />
+        <div>
+            <h2>@Model.Album.Name</h2>
+            <p>@string.Join(", ", Model.Album.Artists.Select(a => a.Name))</p>
+            <p><strong>Released:</strong> @Model.Album.ReleaseDate</p>
+        </div>
+    </div>
+
+    <h4>Tracks</h4>
+    <ol>
+        @foreach (var t in Model.Tracks)
+        {
+            <li>
+                <a asp-page="/Track" asp-route-id="@t.Id">@t.Name</a>
+                <small class="text-muted"> — @string.Join(", ", t.Artists.Select(a => a.Name))</small>
+            </li>
+        }
+    </ol>
+}
+else
+{
+    <p>Album not found.</p>
+}

@@ -23,7 +23,7 @@ namespace SpotifyProject.Services
 
         private SpotifyClient GetSpotifyClient()
         {
-            return _spotifyClientFactory.CreateUserClient();
+            return _spotifyClientFactory.CreateAppClient();
         }
 
         public async Task<PrivateUser> GetCurrentUserProfile()
@@ -38,17 +38,13 @@ namespace SpotifyProject.Services
             
             try
             {
-                // Let's try using a completely different approach - instantiate the request and use all possible property names
                 var request = new PersonalizationTopRequest();
                 request.Limit = limit;
-                
-                // Let's try setting every possible property that might exist
                 var requestType = request.GetType();
                 var properties = requestType.GetProperties();
                 
                 foreach (var prop in properties)
                 {
-                    // Try setting any property that might be related to time range
                     if (prop.Name.ToLower().Contains("time") || prop.Name.ToLower().Contains("range"))
                     {
                         try
@@ -61,8 +57,6 @@ namespace SpotifyProject.Services
                             {
                                 var enumType = prop.PropertyType.IsGenericType ? prop.PropertyType.GetGenericArguments()[0] : prop.PropertyType;
                                 var enumNames = Enum.GetNames(enumType);
-                                
-                                // Try to find a matching enum value
                                 var matchingEnum = enumNames.FirstOrDefault(name => 
                                     name.ToLower().Contains(timeRange.Replace("_", "").Replace("-", "")));
                                 
@@ -75,7 +69,6 @@ namespace SpotifyProject.Services
                         }
                         catch
                         {
-                            // Ignore any errors setting individual properties
                         }
                     }
                 }
@@ -84,7 +77,6 @@ namespace SpotifyProject.Services
             }
             catch (Exception ex)
             {
-                // Let's add a visible error message to see what's happening
                 throw new Exception($"Error getting top tracks for {timeRange}: {ex.Message}", ex);
             }
         }
@@ -97,8 +89,6 @@ namespace SpotifyProject.Services
             {
                 var request = new PersonalizationTopRequest();
                 request.Limit = limit;
-                
-                // Use the same property-setting logic
                 var requestType = request.GetType();
                 var properties = requestType.GetProperties();
                 
@@ -116,7 +106,6 @@ namespace SpotifyProject.Services
                             {
                                 var enumType = prop.PropertyType.IsGenericType ? prop.PropertyType.GetGenericArguments()[0] : prop.PropertyType;
                                 var enumNames = Enum.GetNames(enumType);
-                                
                                 var matchingEnum = enumNames.FirstOrDefault(name => 
                                     name.ToLower().Contains(timeRange.Replace("_", "").Replace("-", "")));
                                 
@@ -129,7 +118,6 @@ namespace SpotifyProject.Services
                         }
                         catch
                         {
-                            // Ignore errors
                         }
                     }
                 }
@@ -140,6 +128,57 @@ namespace SpotifyProject.Services
             {
                 throw new Exception($"Error getting top artists for {timeRange}: {ex.Message}", ex);
             }
+        }
+
+        // ---------- New convenience read methods for navigation pages ----------
+
+        public async Task<FullArtist> GetArtist(string artistId)
+        {
+            var spotify = GetSpotifyClient();
+            return await spotify.Artists.Get(artistId);
+        }
+
+        public async Task<List<SimpleAlbum>> GetArtistAlbums(string artistId, int limit = 50)
+        {
+            var spotify = GetSpotifyClient();
+            var response = await spotify.Artists.GetAlbums(artistId, new ArtistsAlbumsRequest { Limit = Math.Min(limit, 50) });
+            return response.Items.ToList();
+        }
+
+        public async Task<FullAlbum> GetAlbum(string albumId)
+        {
+            var spotify = GetSpotifyClient();
+            return await spotify.Albums.Get(albumId);
+        }
+
+        public async Task<List<SimpleTrack>> GetAlbumTracks(string albumId, int limit = 50)
+        {
+            var spotify = GetSpotifyClient();
+            var response = await spotify.Albums.GetTracks(albumId, new AlbumTracksRequest { Limit = Math.Min(limit, 50) });
+            return response.Items.ToList();
+        }
+
+        public async Task<FullTrack> GetTrack(string trackId)
+        {
+            var spotify = GetSpotifyClient();
+            return await spotify.Tracks.Get(trackId);
+        }
+
+        public async Task<FullPlaylist> GetPlaylist(string playlistId)
+        {
+            var spotify = GetSpotifyClient();
+            return await spotify.Playlists.Get(playlistId);
+        }
+
+        public async Task<List<FullTrack>> GetPlaylistTracks(string playlistId, int limit = 100)
+        {
+            var spotify = GetSpotifyClient();
+            var response = await spotify.Playlists.GetItems(playlistId, new PlaylistGetItemsRequest { Limit = Math.Min(limit, 100) });
+            var tracks = response.Items
+                .Where(i => i.Track is FullTrack)
+                .Select(i => (FullTrack)i.Track!)
+                .ToList();
+            return tracks;
         }
     }
 }

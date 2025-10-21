@@ -151,7 +151,7 @@ else if (Model.SearchResults.SearchRequest.Query != null ||
                                     <img src="@img" alt="@artist.Name" width="48" height="48" class="rounded me-3" />
                                 }
                                 <div class="flex-fill">
-                                    <a asp-page="/Artists/Details" asp-route-id="@artist.Id">@artist.Name</a>
+                                    <a href="/Artists/Details/@artist.Id">@artist.Name</a>
                                     @if (artist.Genres?.Any() == true)
                                     {
                                         <div class="text-muted small">@string.Join(", ", artist.Genres.Take(3))</div>
@@ -175,11 +175,11 @@ else if (Model.SearchResults.SearchRequest.Query != null ||
                             <li class="list-group-item">
                                 <div class="d-flex justify-content-between">
                                     <div>
-                                        <div>@track.Name</div>
+                                        <div><a href="/Track/@track.Id">@track.Name</a></div>
                                         <div class="text-muted small">@primaryArtist</div>
                                         @if (track.Album != null)
                                         {
-                                            <div class="text-muted small">Album: @track.Album.Name</div>
+                                            <div class="text-muted small">Album: <a href="/Album/@track.Album.Id">@track.Album.Name</a></div>
                                         }
                                     </div>
                                     <div class="text-end">
@@ -211,7 +211,7 @@ else if (Model.SearchResults.SearchRequest.Query != null ||
                                     <img src="@img" alt="@album.Name" width="48" height="48" class="rounded me-3" />
                                 }
                                 <div class="flex-fill">
-                                    <div>@album.Name</div>
+                                    <div><a href="/Album/@album.Id">@album.Name</a></div>
                                     <div class="text-muted small">@primaryArtist</div>
                                     <div class="text-muted small">@album.ReleaseDate (@album.TotalTracks tracks)</div>
                                 </div>
@@ -237,7 +237,7 @@ else if (Model.SearchResults.SearchRequest.Query != null ||
                                         <img src="@img" alt="@playlist.Name" width="48" height="48" class="rounded me-3" />
                                     }
                                     <div class="flex-fill">
-                                        <div>@playlist.Name</div>
+                                        <div><a href="/Playlist/@playlist.Id">@playlist.Name</a></div>
                                         <div class="text-muted small">By @playlist.Owner.DisplayName</div>
                                         <div class="text-muted small">@playlist.Tracks.Total tracks</div>
                                     </div>

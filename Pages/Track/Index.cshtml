@@ -1,0 +1,24 @@
+﻿@page "{id}"
+@model SpotifyProject.Pages.Track.IndexModel
+@{
+    ViewData["Title"] = Model.Track?.Name ?? "Track";
+}
+
+@if (Model.Track != null)
+{
+    <h2>@Model.Track.Name</h2>
+    <p>
+        <strong>Artists:</strong>
+        @foreach (var a in Model.Track.Artists)
+        {
+            <a asp-page="/Artist" asp-route-id="@a.Id">@a.Name</a>
+            @(a != Model.Track.Artists.Last() ? ", " : "")
+        }
+    </p>
+    <p><strong>Album:</strong> <a asp-page="/Album" asp-route-id="@Model.Track.Album?.Id">@Model.Track.Album?.Name</a></p>
+    <p><strong>Duration:</strong> @System.TimeSpan.FromMilliseconds(Model.Track.DurationMs).ToString(@"m\:ss")</p>
+}
+else
+{
+    <p>Track not found.</p>
+}
