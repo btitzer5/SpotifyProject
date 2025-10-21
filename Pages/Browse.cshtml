@@ -1,0 +1,49 @@
+﻿@page
+@model SpotifyProject.Pages.BrowseModel
+@{
+    ViewData["Title"] = "Browse";
+}
+
+<h2>New Releases</h2>
+
+@if (!Model.NewReleases.Any())
+{
+    <p class="text-muted">No new releases available.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+        @foreach (var a in Model.NewReleases)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrWhiteSpace(a.ImageUrl))
+                    {
+                        <a href="/Album/@a.Id"><img class="card-img-top" src="@a.ImageUrl" alt="@a.Name" /></a>
+                    }
+                    <div class="card-body">
+                        <h6 class="card-title text-truncate">
+                            <a href="/Album/@a.Id" class="text-decoration-none text-dark">@a.Name</a>
+                        </h6>
+                        @if (!string.IsNullOrWhiteSpace(a.Artist))
+                        {
+                            <div class="text-muted small">
+                                @if (!string.IsNullOrWhiteSpace(a.ArtistId))
+                                {
+                                    <a href="/Artists/Details/@a.ArtistId" class="text-muted">@a.Artist</a>
+                                }
+                                else
+                                {
+                                    @a.Artist
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <a class="btn btn-sm btn-outline-secondary" href="https://open.spotify.com/album/@a.Id" target="_blank" rel="noopener">Open</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
