@@ -36,15 +36,25 @@ public class PlaylistsModel : PageModel
         {
             // Log detailed API info for diagnosis
             _logger.LogError(apiEx, "Spotify API error. Message: {Message}", apiEx.Message);
+            _logger.LogError("Full APIException: {Exception}", apiEx.ToString());
 
-            // Try to extract status code if available
             if (apiEx.Response != null)
             {
                 _logger.LogError("Spotify API response status: {Status}", apiEx.Response.StatusCode);
+                try
+                {
+                    // Attempt to log response body if present
+                    _logger.LogError("Spotify API response body: {Body}", apiEx.Response.Body ?? "(no body)");
+                }
+                catch
+                {
+                    // ignore body read errors
+                }
             }
 
-            // If unauthorized, send user to login
-            if (apiEx.Response != null && apiEx.Response.StatusCode == HttpStatusCode.Unauthorized)
+            // If unauthorized or forbidden, send user to login to re-authorize
+            if (apiEx.Response != null && 
+                (apiEx.Response.StatusCode == HttpStatusCode.Unauthorized || apiEx.Response.StatusCode == HttpStatusCode.Forbidden))
             {
                 return RedirectToPage("/Auth/Login");
             }
