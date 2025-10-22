@@ -4,6 +4,9 @@ using SpotifyProject.Models;
 using SpotifyProject.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.DataProtection;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +14,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+
+// Persist DataProtection keys to disk so session cookies can be unprotected across restarts
+var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
+Directory.CreateDirectory(keysFolder);
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
+    .SetApplicationName("SpotifyProject");
+
+// Configure session cookie options so OAuth redirects work with dev tunnels over HTTPS
+builder.Services.AddSession(options =>
+{
+    // If you serve over HTTPS (recommended), set None + Secure
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.IdleTimeout = TimeSpan.FromHours(1);
+});
 
 // Configure forwarded headers so dev tunnels' X-Forwarded-* values are honored
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
