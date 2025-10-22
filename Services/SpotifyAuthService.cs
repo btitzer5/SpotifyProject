@@ -58,6 +58,9 @@ public sealed class SpotifyAuthService
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
         });
 
+        // Diagnostic: log the state (do NOT log the verifier value)
+        _logger.LogInformation("PKCE stored. State={State}", state);
+
         var callback = GetCallbackUri();
 
         var request = new LoginRequest(
@@ -81,9 +84,15 @@ public sealed class SpotifyAuthService
         if (string.IsNullOrWhiteSpace(state))
             throw new InvalidOperationException("Missing OAuth state.");
 
+        // Diagnostic: log the incoming state value from Spotify
+        _logger.LogInformation("Callback received. State={State}", state);
+
         var verifier = await _cache.GetStringAsync($"pkce:{state}", ct);
         if (string.IsNullOrEmpty(verifier))
+        {
+            _logger.LogWarning("PKCE verifier missing for state {State}. Cache keys not found or different host/process handled callback.", state);
             throw new InvalidOperationException("Missing PKCE verifier. Please restart login.");
+        }
 
         var callback = GetCallbackUri();
 
@@ -96,5 +105,7 @@ public sealed class SpotifyAuthService
 
         var json = JsonSerializer.Serialize(tokenResponse);
         _http.HttpContext!.Session.SetString(Constants.SessionTokensKey, json);
+
+        _logger.LogInformation("Token exchange successful. Scopes: {Scopes}, ExpiresIn: {ExpiresIn}", tokenResponse.Scope, tokenResponse.ExpiresIn);
     }
 }
