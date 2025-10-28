@@ -7,7 +7,8 @@
 
 <h2>Search</h2>
 
-<div class="card mb-4">
+
+<div class="spotify-card search-card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <span>Search Options</span>
         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedSearch()">
@@ -120,7 +121,7 @@
     </div>
 </div>
 
-<!-- Search Results -->
+
 @if (!string.IsNullOrWhiteSpace(Model.SearchResults.ErrorMessage))
 {
     <div class="alert alert-danger">@Model.SearchResults.ErrorMessage</div>

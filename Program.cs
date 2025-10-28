@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.DataProtection;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddMemoryCache();
 
 // Persist DataProtection keys to disk so session cookies can be unprotected across restarts
 var keysFolder = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
@@ -52,6 +54,7 @@ builder.Services.AddScoped<SpotifyAuthService>();
 builder.Services.AddScoped<SpotifyClientFactory>();
 builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
 builder.Services.AddScoped<SpotifyService>();
+builder.Services.AddSingleton<ArtistMetricsService>();
 
 // Keep console logging available
 builder.Logging.AddConsole();
