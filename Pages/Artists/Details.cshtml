@@ -29,17 +29,65 @@ else
                         <a class="spotify-btn btn btn-success btn-sm" target="_blank" rel="noopener" href="https://open.spotify.com/artist/@Model.Artist.Id">Open in Spotify</a>
                     }
                     <div class="mt-2">
-                        <span class="badge bg-secondary">@Model.Artist.Popularity ?? 0%</span>
-                        @if (Model.Artist.Followers?.Total is int followers)
-                        {
-                            <span class="text-muted ms-2 small">@followers.ToString("N0") followers</span>
+                        @{
+                            var followersDisplay = Model.Metrics != null
+                                ? Model.Metrics.Followers.ToString("N0")
+                                : (Model.Artist.Followers?.Total.ToString("N0"));
                         }
+                        <span class="text-muted ms-2 small">@followersDisplay followers</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    
+    <section class="mb-4">
+        <div class="card artist-metrics p-3 mb-4">
+            <div class="metrics-grid">
+                <div class="metric text-center">
+                    <div class="metric-value">
+                        @(
+                            Model.Metrics != null
+                                ? Model.Metrics.Followers.ToString("N0")
+                                : (Model.Artist.Followers?.Total.ToString("N0") ?? "—")
+                        )
+                    </div>
+                    <div class="metric-label text-muted small">Followers</div>
+                </div>
+
+                <div class="metric text-center">
+                    <div class="metric-value">
+                        @(
+                            Model.Metrics != null
+                                ? Model.Metrics.Popularity.ToString()
+                                : Model.Artist.Popularity.ToString()
+                        )
+                    </div>
+                    <div class="metric-label text-muted small">Popularity</div>
+                </div>
+
+                <div class="metric text-center">
+                    @{
+                        var latestRelease = Model.Albums?.OrderByDescending(a => a.ReleaseDate).FirstOrDefault()?.ReleaseDate;
+                        var latestDisplay = string.IsNullOrWhiteSpace(latestRelease) ? "—" : latestRelease;
+                    }
+                    <div class="metric-value">@latestDisplay</div>
+                    <div class="metric-label text-muted small">Latest Release</div>
+                </div>
+            </div>
+
+            <div class="text-end mt-2 small text-muted">
+                <span>Metrics from Spotify public API (accurate & fast).</span>
+                @if (Model.Metrics != null)
+                {
+                    <div class="text-muted small">Updated @Model.Metrics.RetrievedAt.ToLocalTime().ToString("g")</div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Tracks and Albums sections unchanged -->
     <section class="mb-4">
         <h4 class="h5">Top Tracks</h4>
         @if (!Model.TopTracks.Any())

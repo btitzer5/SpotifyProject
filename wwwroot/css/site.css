@@ -270,6 +270,23 @@ entity-header .entity-image { flex: 0 0 140px; width: 140px; height: 140px; disp
   border: 1px solid rgba(255,255,255,0.04);
 }
 
+/* Force readable colors for entity header metadata (followers, genres, small labels) */
+.entity-header .text-muted,
+.entity-header .text-muted.small,
+.entity-header .small,
+.entity-header .ms-2,
+.entity-header .ms-2.small,
+.entity-header .entity-meta
+{
+  color: var(--entity-muted) !important;
+}
+
+/* Ensure badge text remains white on dark badge background */
+.entity-header .badge,
+.entity-header .badge * {
+  color: var(--spotify-white) !important;
+}
+
 /* Lists and track items */
 .list-group-item {
   background: transparent;
@@ -323,25 +340,154 @@ a:hover {
   color: var(--entity-muted) !important;
 }
 
-/* Responsive adjustments */
-@media (max-width: 576px) {
-  .entity-header { flex-direction: column; align-items: flex-start; }
-  .entity-header .entity-image { width: 100%; height: auto; }
+/* Artist metrics card */
+.artist-metrics {
+    border-radius: 0.5rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--card-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    padding: 12px;
 }
 
-/* preserve previously added small UI improvements */
-.entity-header { border-radius: .375rem; }
-.entity-header .entity-image img { object-fit: cover; }
-.entity-header h1, .entity-header h2, .entity-header h3, .entity-header h4 { margin: 0; }
-.spotify-btn { white-space: nowrap; }
+/* metric item (subtle panel matching other cards) */
+.artist-metrics .metric {
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.01));
+    border-radius: 0.375rem;
+    border: 1px solid rgba(255,255,255,0.02);
+}
 
-/* Improve readability on entity/detail pages — overrides only for those components */
-.entity-header .text-muted,
-.entity-header .text-muted.small,
-.list-group-item .text-muted,
-.text-muted.small.entity, /* optional hook if needed */
-.entity-meta, /* optional hook if you want to add a class in Razor later */
-.entity-header .card-body .text-muted
-{
+/* Primary value should be bright and readable against the dark background */
+.artist-metrics .metric-value {
+    font-weight: 600;
+    font-size: 1.375rem;
+    color: var(--spotify-white); /* visible white on dark bg */
+}
+
+/* Labels use the entity muted color used elsewhere (green-tinted muted) */
+.artist-metrics .metric-label {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--entity-muted);
+}
+
+/* make small note line readable as well */
+.artist-metrics .small {
+    color: var(--entity-muted);
+}
+
+/* --- Search card: align with site theme and maintain readability --- */
+
+/* Use spotify-card baseline but add explicit search-card hook */
+.search-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    color: var(--spotify-white);
+}
+
+/* Header should be readable and visually integrated */
+.search-card .card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    color: var(--spotify-white);
+}
+
+/* Body text and labels */
+.search-card .card-body {
+    color: var(--spotify-white);
+}
+
+.search-card .form-label {
+    color: var(--entity-muted);
+}
+
+/* Inputs: subtle dark background, visible text */
+.search-card .form-control,
+.search-card .form-select {
+    background: rgba(255,255,255,0.01);
+    color: var(--spotify-white);
+    border: 1px solid var(--card-border);
+}
+
+/* Inline help / muted text in search card */
+.search-card .text-muted {
+    color: var(--entity-muted) !important;
+}
+
+/* Adjust button outlines to be visible on dark */
+.search-card .btn-outline-secondary {
+    color: var(--spotify-white) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Force readable text on artist metrics (override any dark text leakage) */
+.artist-metrics,
+.artist-metrics * {
+  color: var(--spotify-white) !important;
+}
+
+.artist-metrics .metric-label,
+.artist-metrics .small {
   color: var(--entity-muted) !important;
+}
+
+.artist-metrics .metric-value {
+  color: var(--spotify-white) !important;
+}
+
+/* Ensure search card inputs and labels are visible on dark background */
+.search-card,
+.search-card * {
+  color: var(--spotify-white) !important;
+}
+
+.search-card .card-header {
+  color: var(--spotify-white) !important;
+  border-bottom-color: rgba(255,255,255,0.03) !important;
+}
+
+.search-card .form-label {
+  color: var(--entity-muted) !important;
+}
+
+.search-card .form-control,
+.search-card .form-select {
+  color: var(--spotify-white) !important;
+  background: rgba(255,255,255,0.02) !important;
+  border: 1px solid var(--card-border) !important;
+}
+
+.search-card .btn-outline-secondary {
+  color: var(--spotify-white) !important;
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* Ensure placeholders and helper text in the search card are readable on dark bg */
+.search-card ::-webkit-input-placeholder { color: var(--entity-muted); opacity: 1; }
+.search-card ::-moz-placeholder { color: var(--entity-muted); opacity: 1; } /* Firefox 19+ */
+.search-card :-ms-input-placeholder { color: var(--entity-muted); opacity: 1; } /* IE 10+ */
+.search-card ::placeholder { color: var(--entity-muted); opacity: 1; }
+
+/* Number inputs on some browsers show pseudo-placeholder as value text — ensure visibility */
+.search-card input[type="number"]::-webkit-outer-spin-button,
+.search-card input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Helper / hint text (e.g. small tags, .form-text) */
+.search-card .form-text,
+search-card small,
+.search-card .text-muted,
+.search-card .form-hint {
+  color: var(--entity-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Keep input text high contrast */
+.search-card .form-control,
+.search-card .form-select {
+  color: var(--spotify-white) !important;
 }
