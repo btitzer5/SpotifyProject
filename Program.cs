@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient();
+
+// Add controllers to the container.
+builder.Services.AddControllersWithViews();
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddHttpContextAccessor();
@@ -33,6 +38,11 @@ builder.Services.AddScoped<SpotifyAuthService>();
 builder.Services.AddScoped<SpotifyClientFactory>();
 builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
 builder.Services.AddScoped<SpotifyService>();
+<<<<<<< Updated upstream
+=======
+builder.Services.AddSingleton<ArtistMetricsService>();
+builder.Services.AddScoped<ChatbotService>();
+>>>>>>> Stashed changes
 
 // Keep console logging available
 builder.Logging.AddConsole();
@@ -64,5 +74,12 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 app.MapRazorPages();
+app.MapControllers();
+app.UseAuthentication();  // Must come before UseAuthorization
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
