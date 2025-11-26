@@ -1,0 +1,203 @@
+﻿@page
+@model SpotifyProject.Pages.Profile.IndexModel
+@{
+    ViewData["Title"] = "Your Profile";
+}
+
+<div class="container">
+    <h2 class="mb-4">Your Spotify Profile</h2>
+    
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    @if (Model.CurrentUser != null)
+    {
+        <!-- User Profile Header -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body d-flex align-items-center">
+                        @if (Model.CurrentUser.Images?.Any() == true)
+                        {
+                            <img src="@Model.CurrentUser.Images.First().Url" 
+                                 alt="Profile picture" 
+                                 class="rounded-circle me-4" 
+                                 style="width: 100px; height: 100px;" />
+                        }
+                        <div>
+                            <h2 class="mb-0">@Model.CurrentUser.DisplayName</h2>
+                            <p class="text-muted">@Model.CurrentUser.Email</p>
+                            <div>
+                                <span class="badge bg-primary">@Model.CurrentUser.Followers.Total Followers</span>
+                                @if (!string.IsNullOrEmpty(Model.CurrentUser.Country))
+                                {
+                                    <span class="badge bg-info">@Model.CurrentUser.Country</span>
+                                }
+                                @if (Model.CurrentUser.Product != null)
+                                {
+                                    <span class="badge bg-success">@Model.CurrentUser.Product</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls Section -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h4>Listening Activity</h4>
+                <div class="btn-group" role="group">
+                    <a asp-page="./Index" asp-route-timeRange="short_term" asp-route-limit="@Model.Limit"
+                       class="btn @(Model.TimeRange == "short_term" ? "btn-primary" : "btn-outline-primary")">
+                        Last 4 Weeks
+                    </a>
+                    <a asp-page="./Index" asp-route-timeRange="medium_term" asp-route-limit="@Model.Limit"
+                       class="btn @(Model.TimeRange == "medium_term" ? "btn-primary" : "btn-outline-primary")">
+                        Last 6 Months
+                    </a>
+                    <a asp-page="./Index" asp-route-timeRange="long_term" asp-route-limit="@Model.Limit"
+                       class="btn @(Model.TimeRange == "long_term" ? "btn-primary" : "btn-outline-primary")">
+                        All Time
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4>Display Options</h4>
+                <div class="btn-group" role="group">
+                    <a asp-page="./Index" asp-route-timeRange="@Model.TimeRange" asp-route-limit="10"
+                       class="btn @(Model.Limit == 10 ? "btn-success" : "btn-outline-success")">
+                        Top 10
+                    </a>
+                    <a asp-page="./Index" asp-route-timeRange="@Model.TimeRange" asp-route-limit="50"
+                       class="btn @(Model.Limit == 50 ? "btn-success" : "btn-outline-success")">
+                        Top 50
+                    </a>
+                </div>
+                <small class="text-muted d-block mt-1">
+                    Currently showing top @Model.Limit items
+                </small>
+            </div>
+        </div>
+
+        <!-- Metrics Display -->
+        <div class="row">
+            <!-- Top Tracks -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Your Top Tracks (@Model.TopTracks?.Items?.Count ?? 0)</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        @if (Model.TopTracks?.Items?.Any() == true)
+                        {
+                            <ol class="list-group list-group-numbered">
+                                @foreach (var track in Model.TopTracks.Items)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold"><a href="/Track/@track.Id">@track.Name</a></div>
+                                            @if (track.Artists?.Any() == true)
+                                            {
+                                                <small><a href="/Artists/Details/@track.Artists.First().Id">@track.Artists.First().Name</a></small>
+                                            }
+                                        </div>
+                                        @if (track.Album?.Images?.Any() == true)
+                                        {
+                                            <a href="/Album/@track.Album.Id"><img src="@track.Album.Images.Last().Url" width="40" height="40" class="rounded" alt="@track.Album.Name" /></a>
+                                        }
+                                    </li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No top tracks data available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Artists -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Your Top Artists (@Model.TopArtists?.Items?.Count ?? 0)</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        @if (Model.TopArtists?.Items?.Any() == true)
+                        {
+                            <ol class="list-group list-group-numbered">
+                                @foreach (var artist in Model.TopArtists.Items)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold"><a href="/Artists/Details/@artist.Id">@artist.Name</a></div>
+                                            @if (artist.Genres?.Any() == true)
+                                            {
+                                                <small class="text-muted">@string.Join(", ", artist.Genres.Take(2))</small>
+                                            }
+                                        </div>
+                                        @if (artist.Images?.Any() == true)
+                                        {
+                                            <a href="/Artists/Details/@artist.Id"><img src="@artist.Images.Last().Url" width="40" height="40" class="rounded-circle" alt="@artist.Name" /></a>
+                                        }
+                                    </li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No top artists data available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Top Albums -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Your Top Albums (@Model.TopAlbums?.Count ?? 0)</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        @if (Model.TopAlbums?.Any() == true)
+                        {
+                            <ol class="list-group list-group-numbered">
+                                @foreach (var album in Model.TopAlbums)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-bold"><a href="/Album/@album.Id">@album.Name</a></div>
+                                            @if (album.Artists?.Any() == true)
+                                            {
+                                                <small class="text-muted"><a href="/Artists/Details/@album.Artists.First().Id">@album.Artists.First().Name</a></small>
+                                            }
+                                        </div>
+                                        @if (album.Images?.Any() == true)
+                                        {
+                                            <a href="/Album/@album.Id"><img src="@album.Images.Last().Url" width="40" height="40" class="rounded" alt="@album.Name" /></a>
+                                        }
+                                    </li>
+                                }
+                            </ol>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No top albums data available.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            Please log in to view your profile metrics.
+        </div>
+    }
+</div>
