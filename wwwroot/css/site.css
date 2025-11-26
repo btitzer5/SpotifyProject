@@ -476,7 +476,20 @@ a:hover {
   -webkit-appearance: none;
   margin: 0;
 }
+/* preserve previously added small UI improvements */
+.entity-header { border-radius: .375rem; }
+.entity-header .entity-image img { object-fit: cover; }
+.entity-header h1, .entity-header h2, .entity-header h3, .entity-header h4 { margin: 0; }
+.spotify-btn { white-space: nowrap; }
 
+/* Improve readability on entity/detail pages — overrides only for those components */
+.entity-header .text-muted,
+.entity-header .text-muted.small,
+.list-group-item .text-muted,
+.text-muted.small.entity, /* optional hook if needed */
+.entity-meta, /* optional hook if you want to add a class in Razor later */
+.entity-header .card-body .text-muted
+{
 /* Helper / hint text (e.g. small tags, .form-text) */
 .search-card .form-text,
 search-card small,
