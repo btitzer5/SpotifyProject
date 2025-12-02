@@ -18,6 +18,8 @@ namespace SpotifyProject.Pages.Auth
                 // Playlists and basic profile
                 Scopes.PlaylistReadPrivate,
                 Scopes.PlaylistReadCollaborative,
+            Scopes.PlaylistModifyPrivate,    // Required for creating/modifying private playlists
+            Scopes.PlaylistModifyPublic,     // Required for creating/modifying public playlists
                 Scopes.UserReadEmail,
                 Scopes.UserLibraryRead,
                 Scopes.UserReadPrivate,        // profile data

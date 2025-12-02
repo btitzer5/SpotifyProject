@@ -1,0 +1,227 @@
+﻿@page
+@model SpotifyProject.Pages.PlaylistBuilderModel
+@{
+    ViewData["Title"] = "Create a Playlist";
+}
+
+<div class="container py-4" style="background-color:#121212; color:white; min-height:100vh;">
+
+    <h2 class="mb-4 fw-bold">Playlist Builder</h2>
+
+    <!-- search w/ autocomplete -->
+    <form method="post" asp-page-handler="Search" class="mb-4" autocomplete="off">
+        <div class="position-relative">
+            <input type="text"
+                   id="searchBox"
+                   name="SearchQuery"
+                   class="form-control"
+                   placeholder="Search for tracks..." />
+
+            <!-- autocomplete results -->
+            <div id="autocompleteResults"
+                 class="list-group position-absolute w-100"
+                 style="z-index: 10; display: none; max-height: 300px; overflow-y: auto;">
+            </div>
+        </div>
+
+        <button class="btn btn-success mt-3" type="submit">Search</button>
+    </form>
+
+
+    <form method="post" asp-page-handler="AddAllTopTracks" class="mb-4">
+        <button class="btn btn-outline-success w-100 py-2 fw-bold">
+            + Add All Top Tracks (Last 4 Weeks)
+        </button>
+    </form>
+
+
+    @if (Model.SearchResults?.Tracks?.Items != null && Model.SearchResults.Tracks.Items.Any())
+    {
+        <h4 class="fw-bold mt-4">Search Results</h4>
+        <div class="list-group mb-4">
+            @foreach (var track in Model.SearchResults.Tracks.Items)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center"
+                     style="background-color:#1e1e1e; color:white;">
+                    <div class="d-flex align-items-center">
+                        <img src="@track.Album.Images.FirstOrDefault()?.Url"
+                             width="50" height="50"
+                             class="rounded me-3" />
+
+                        <div>
+                            <strong>@track.Name</strong><br />
+                            <span class="text-muted">@string.Join(", ", track.Artists.Select(a => a.Name))</span>
+                        </div>
+                    </div>
+
+                    <form method="post" asp-page-handler="AddTrack">
+                        <input type="hidden" name="TrackUri" value="@track.Uri" />
+                        <input type="hidden" name="TrackName" value="@track.Name" />
+                        <input type="hidden" name="TrackArtist" value="@string.Join(", ", track.Artists.Select(a => a.Name))" />
+                        <input type="hidden" name="TrackImage" value="@track.Album.Images.FirstOrDefault()?.Url" />
+                        <button class="btn btn-outline-success">Add</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- album art section -->
+    <div class="d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold mb-0">Tracks in Your Playlist</h4>
+        <div>
+            <form method="post" asp-page-handler="ClearAll" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    Clear All
+                </button>
+            </form>
+            <form method="post" asp-page-handler="Recommend" class="d-inline ms-2">
+                <button type="submit" class="btn btn-outline-info btn-sm">
+                    Recommend Tracks
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.SelectedTracks == null || !Model.SelectedTracks.Any())
+    {
+        <p class="text-muted mt-2">No tracks added yet.</p>
+    }
+    else
+    {
+        <div class="list-group mb-4 mt-2">
+            @foreach (var t in Model.SelectedTracks)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center"
+                     style="background-color:#1e1e1e; color:white;">
+                    <div class="d-flex align-items-center">
+                        <img src="@t.Image"
+                             width="50" height="50"
+                             class="rounded me-3" />
+
+                        <div>
+                            <strong>@t.Name</strong><br />
+                            <span class="text-muted">@t.Artist</span>
+                        </div>
+                    </div>
+
+                    <form method="post" asp-page-handler="RemoveTrack">
+                        <input type="hidden" name="TrackUri" value="@t.Uri" />
+                        <button class="btn btn-outline-danger">Remove</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.RecommendedTracks != null && Model.RecommendedTracks.Any())
+    {
+        <h4 class="fw-bold mt-4">Recommended Tracks</h4>
+        <div class="list-group mb-4">
+            @foreach (var r in Model.RecommendedTracks)
+            {
+                <div class="list-group-item d-flex justify-content-between align-items-center"
+                     style="background-color:#1e1e1e; color:white;">
+                    <div class="d-flex align-items-center">
+                        <img src="@r.Image"
+                             width="50" height="50"
+                             class="rounded me-3" />
+                        <div>
+                            <strong>@r.Name</strong><br />
+                            <span class="text-muted">@r.Artist</span>
+                        </div>
+                    </div>
+
+                    <form method="post" asp-page-handler="AddTrack">
+                        <input type="hidden" name="TrackUri" value="@r.Uri" />
+                        <input type="hidden" name="TrackName" value="@r.Name" />
+                        <input type="hidden" name="TrackArtist" value="@r.Artist" />
+                        <input type="hidden" name="TrackImage" value="@r.Image" />
+                        <button class="btn btn-outline-success">Add</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- pub/pri tog -->
+    <form method="post" asp-page-handler="CreatePlaylist">
+        <h4 class="fw-bold">Playlist Details</h4>
+
+        <div class="form-check form-switch mb-3">
+            <input class="form-check-input"
+                   type="checkbox"
+                   id="isPublicToggle"
+                   name="IsPublic">
+            <label class="form-check-label fw-bold" for="isPublicToggle">
+                Make playlist public
+            </label>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Playlist Name</label>
+            <input type="text" name="PlaylistName" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Description (optional)</label>
+            <textarea name="PlaylistDescription" class="form-control"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg">Create Playlist</button>
+    </form>
+
+</div>
+
+<script>
+    const searchBox = document.getElementById("searchBox");
+    const resultsBox = document.getElementById("autocompleteResults");
+
+    let debounceTimer;
+
+    searchBox.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+
+        const query = searchBox.value.trim();
+        if (query.length < 2) {
+            resultsBox.style.display = "none";
+            resultsBox.innerHTML = "";
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetch(`/PlaylistBuilder?handler=Autocomplete&query=${encodeURIComponent(query)}`)
+                .then(r => r.json())
+                .then(data => {
+                    resultsBox.innerHTML = "";
+                    if (!data || data.length === 0) {
+                        resultsBox.style.display = "none";
+                        return;
+                    }
+
+                    data.forEach(track => {
+                        const item = document.createElement("button");
+                        item.type = "button";
+                        item.className = "list-group-item list-group-item-action";
+                        item.style.backgroundColor = "#1e1e1e";
+                        item.style.color = "white";
+                        item.innerHTML = `
+                            <div>
+                                <strong>${track.name}</strong><br/>
+                                <span class="text-muted">${track.artist}</span>
+                            </div>
+                        `;
+
+                        item.addEventListener("click", () => {
+                            document.forms[0].SearchQuery.value = track.name;
+                            resultsBox.style.display = "none";
+                        });
+
+                        resultsBox.appendChild(item);
+                    });
+
+                    resultsBox.style.display = "block";
+                });
+        }, 300);
+    });
+</script>

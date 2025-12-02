@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication;
+ï»¿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using SpotifyAPI.Web;
@@ -24,7 +24,7 @@ namespace SpotifyProject.Services
         // App-only client (public endpoints)
         private SpotifyClient GetAppClient() => _spotifyClientFactory.CreateAppClient();
 
-        // User-authenticated client (private endpoints) — will throw if user not authenticated
+        // User-authenticated client (private endpoints) ï¿½ will throw if user not authenticated
         private SpotifyClient GetUserClient() => _spotifyClientFactory.CreateUserClient();
 
         // USER-SPECIFIC endpoints (require authenticated user)
@@ -193,6 +193,50 @@ namespace SpotifyProject.Services
                 .Select(i => (FullTrack)i.Track!)
                 .ToList();
             return tracks;
+        }
+
+        // Get current user's Spotify ID
+        public async Task<string> GetCurrentUserIdAsync()
+        {
+            var user = await GetCurrentUserProfile();
+            return user.Id;
+        }
+
+        // Create a new Playlist using new SpotifyClient
+        public async Task<FullPlaylist> CreatePlaylistAsync(string name, string description = "", bool isPublic = false)
+        {
+            var spotify = GetUserClient();
+            var userId = await GetCurrentUserIdAsync();
+
+            var request = new PlaylistCreateRequest(name)
+            {
+                Description = description,
+                Public = isPublic
+            };
+
+            return await spotify.Playlists.Create(userId, request);
+        }
+
+        // Add tracks to a playlist (expects Spotify URIs like spotify:track:xxxx)
+        public async Task AddTracksToPlaylistAsync(string playlistId, List<string> trackUris)
+        {
+            var spotify = GetUserClient();
+
+            var request = new PlaylistAddItemsRequest(trackUris);
+            await spotify.Playlists.AddItems(playlistId, request);
+        }
+
+        // Search tracks for Playlist Builder
+        public async Task<SearchResponse> SearchTracksAsync(string query, int limit = 20)
+        {
+            var spotify = GetUserClient();
+
+            var req = new SearchRequest(SearchRequest.Types.Track, query)
+            {
+                Limit = limit
+            };
+
+            return await spotify.Search.Item(req);
         }
 
 

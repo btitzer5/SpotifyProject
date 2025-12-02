@@ -14,17 +14,31 @@
 
     @if (Model.CurrentUser != null)
     {
+
         <!-- User Profile Header -->
         <div class="row mb-4">
             <div class="col-md-12">
                 <div class="card spotify-card">
                     <div class="card-body d-flex align-items-center">
                         @if (Model.CurrentUser.Images?.Any() == true)
+
                         {
                             <img src="@Model.CurrentUser.Images.First().Url" 
                                  alt="Profile picture" 
                                  class="rounded-circle me-4" 
                                  style="width: 100px; height: 100px; border: 2px solid rgba(255,255,255,0.1);" />
+                        }
+
+                        else
+
+                        {
+
+                            <!-- fallback avatar if no image -->
+                            <img src="~/images/default.jpg"
+                            alt="Default avatar"
+                            class="rounded-circle me-4"
+                            style="width:120px; height:120px; object-fit:cover;" />
+
                         }
                         <div>
                             <h2 class="mb-0 text-white">@Model.CurrentUser.DisplayName</h2>

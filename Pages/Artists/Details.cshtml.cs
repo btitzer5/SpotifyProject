@@ -38,9 +38,8 @@ public class DetailsModel : PageModel
         var top = await spotify.Artists.GetTopTracks(id, new ArtistsTopTracksRequest("US"));
         TopTracks = top.Tracks?.ToList() ?? new List<FullTrack>();
 
-        var albumsPage = await spotify.Artists.GetAlbums(
-            id,
-            new ArtistsAlbumsRequest
+        // Fetch a small first page of albums to populate the Albums list 
+        var albumsPage = await spotify.Artists.GetAlbums(id, new ArtistsAlbumsRequest
             {
                 IncludeGroupsParam = ArtistsAlbumsRequest.IncludeGroups.Album | ArtistsAlbumsRequest.IncludeGroups.Single,
                 Limit = 20
