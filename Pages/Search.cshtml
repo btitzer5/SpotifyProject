@@ -1,0 +1,278 @@
+@page
+@using SpotifyProject.Extensions
+@model SpotifyProject.Pages.SearchModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h2>Search</h2>
+
+
+<div class="spotify-card search-card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Search Options</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleAdvancedSearch()">
+            <span id="toggleText">@(Model.ShowAdvancedSearch ? "Simple Search" : "Advanced Search")</span>
+        </button>
+    </div>
+    <div class="card-body">
+        <form method="get" id="searchForm">
+            <input type="hidden" name="advanced" id="advancedInput" value="@Model.ShowAdvancedSearch.ToString().ToLower()" />
+            
+            <!-- Basic Search -->
+            <div class="row gy-2 gx-3 align-items-center">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="q" value="@Model.SearchResults.SearchRequest.Query" 
+                           placeholder="Search artists, tracks, albums..." />
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="searchType">
+                        <option value="All" selected="@(Model.SearchResults.SearchRequest.SearchType == SpotifyProject.Models.SearchType.All)">All</option>
+                        <option value="Artists" selected="@(Model.SearchResults.SearchRequest.SearchType == SpotifyProject.Models.SearchType.Artists)">Artists</option>
+                        <option value="Tracks" selected="@(Model.SearchResults.SearchRequest.SearchType == SpotifyProject.Models.SearchType.Tracks)">Tracks</option>
+                        <option value="Albums" selected="@(Model.SearchResults.SearchRequest.SearchType == SpotifyProject.Models.SearchType.Albums)">Albums</option>
+                        <option value="Playlists" selected="@(Model.SearchResults.SearchRequest.SearchType == SpotifyProject.Models.SearchType.Playlists)">Playlists</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </div>
+
+            <!-- Advanced Search Options -->
+            <div id="advancedOptions" style="display: @(Model.ShowAdvancedSearch ? "block" : "none")">
+                <hr />
+                <div class="row gy-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Specific Artist</label>
+                        <input type="text" class="form-control" name="artist" value="@Model.SearchResults.SearchRequest.Artist" 
+                               placeholder="Filter by artist name" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Specific Album</label>
+                        <input type="text" class="form-control" name="album" value="@Model.SearchResults.SearchRequest.Album" 
+                               placeholder="Filter by album name" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Specific Track</label>
+                        <input type="text" class="form-control" name="track" value="@Model.SearchResults.SearchRequest.Track" 
+                               placeholder="Filter by track name" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Genre</label>
+                        <select class="form-select" name="genre">
+                            <option value="">Any Genre</option>
+                            @foreach (var genre in Model.AvailableGenres)
+                            {
+                                <option value="@genre" selected="@(Model.SearchResults.SearchRequest.Genre == genre)">
+                                    @genre.ToTitleCase()
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Specific Year</label>
+                        <input type="number" class="form-control" name="year" value="@Model.SearchResults.SearchRequest.Year" 
+                               min="1900" max="@DateTime.Now.Year" placeholder="e.g., 2023" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">From Year</label>
+                        <input type="number" class="form-control" name="fromYear" value="@Model.SearchResults.SearchRequest.FromYear" 
+                               min="1900" max="@DateTime.Now.Year" placeholder="e.g., 2000" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">To Year</label>
+                        <input type="number" class="form-control" name="toYear" value="@Model.SearchResults.SearchRequest.ToYear" 
+                               min="1900" max="@DateTime.Now.Year" placeholder="e.g., 2023" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Market</label>
+                        <select class="form-select" name="market">
+                            <option value="Any" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.Any)">Any Market</option>
+                            <option value="US" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.US)">United States</option>
+                            <option value="GB" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.GB)">United Kingdom</option>
+                            <option value="CA" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.CA)">Canada</option>
+                            <option value="AU" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.AU)">Australia</option>
+                            <option value="DE" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.DE)">Germany</option>
+                            <option value="FR" selected="@(Model.SearchResults.SearchRequest.Market == SpotifyProject.Models.MarketFilter.FR)">France</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Popularity</label>
+                        <select class="form-select" name="popularity">
+                            <option value="Any" selected="@(Model.SearchResults.SearchRequest.Popularity == SpotifyProject.Models.PopularityFilter.Any)">Any Popularity</option>
+                            <option value="Low" selected="@(Model.SearchResults.SearchRequest.Popularity == SpotifyProject.Models.PopularityFilter.Low)">Low (0-33)</option>
+                            <option value="Medium" selected="@(Model.SearchResults.SearchRequest.Popularity == SpotifyProject.Models.PopularityFilter.Medium)">Medium (34-66)</option>
+                            <option value="High" selected="@(Model.SearchResults.SearchRequest.Popularity == SpotifyProject.Models.PopularityFilter.High)">High (67-100)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Results Limit</label>
+                        <select class="form-select" name="limit">
+                            <option value="10" selected="@(Model.SearchResults.SearchRequest.Limit == 10)">10</option>
+                            <option value="20" selected="@(Model.SearchResults.SearchRequest.Limit == 20)">20</option>
+                            <option value="30" selected="@(Model.SearchResults.SearchRequest.Limit == 30)">30</option>
+                            <option value="50" selected="@(Model.SearchResults.SearchRequest.Limit == 50)">50</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@if (!string.IsNullOrWhiteSpace(Model.SearchResults.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.SearchResults.ErrorMessage</div>
+}
+else if (Model.SearchResults.SearchRequest.Query != null || 
+         Model.SearchResults.SearchRequest.Artist != null || 
+         Model.SearchResults.SearchRequest.Album != null || 
+         Model.SearchResults.SearchRequest.Track != null)
+{
+    @if (!Model.SearchResults.HasResults)
+    {
+        <div class="alert alert-info">No results found for your search criteria.</div>
+    }
+    else
+    {
+        <div class="row">
+            @if (Model.SearchResults.Artists.Any())
+            {
+                <div class="col-lg-6 mb-4">
+                    <h4>Artists (@Model.SearchResults.Artists.Count)</h4>
+                    <ul class="list-group">
+                        @foreach (var artist in Model.SearchResults.Artists)
+                        {
+                            var img = artist.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
+                            <li class="list-group-item d-flex align-items-center">
+                                @if (!string.IsNullOrEmpty(img))
+                                {
+                                    <img src="@img" alt="@artist.Name" width="48" height="48" class="rounded me-3" />
+                                }
+                                <div class="flex-fill">
+                                    <a href="/Artists/Details/@artist.Id">@artist.Name</a>
+                                    @if (artist.Genres?.Any() == true)
+                                    {
+                                        <div class="text-muted small">@string.Join(", ", artist.Genres.Take(3))</div>
+                                    }
+                                    <div class="text-muted small">Popularity: @artist.Popularity/100</div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (Model.SearchResults.Tracks.Any())
+            {
+                <div class="col-lg-6 mb-4">
+                    <h4>Tracks (@Model.SearchResults.Tracks.Count)</h4>
+                    <ul class="list-group">
+                        @foreach (var track in Model.SearchResults.Tracks)
+                        {
+                            var primaryArtist = track.Artists?.FirstOrDefault()?.Name ?? "Unknown artist";
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div><a href="/Track/@track.Id">@track.Name</a></div>
+                                        <div class="text-muted small">@primaryArtist</div>
+                                        @if (track.Album != null)
+                                        {
+                                            <div class="text-muted small">Album: <a href="/Album/@track.Album.Id">@track.Album.Name</a></div>
+                                        }
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-muted small">Popularity: @track.Popularity/100</div>
+                                        @if (track.Explicit)
+                                        {
+                                            <span class="badge bg-warning text-dark">Explicit</span>
+                                        }
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (Model.SearchResults.Albums.Any())
+            {
+                <div class="col-lg-6 mb-4">
+                    <h4>Albums (@Model.SearchResults.Albums.Count)</h4>
+                    <ul class="list-group">
+                        @foreach (var album in Model.SearchResults.Albums)
+                        {
+                            var img = album.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
+                            var primaryArtist = album.Artists?.FirstOrDefault()?.Name ?? "Unknown artist";
+                            <li class="list-group-item d-flex align-items-center">
+                                @if (!string.IsNullOrEmpty(img))
+                                {
+                                    <img src="@img" alt="@album.Name" width="48" height="48" class="rounded me-3" />
+                                }
+                                <div class="flex-fill">
+                                    <div><a href="/Album/@album.Id">@album.Name</a></div>
+                                    <div class="text-muted small">@primaryArtist</div>
+                                    <div class="text-muted small">@album.ReleaseDate (@album.TotalTracks tracks)</div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (Model.SearchResults.Playlists.Any())
+            {
+                <div class="col-lg-6 mb-4">
+                    <h4>Playlists (@Model.SearchResults.Playlists.Count)</h4>
+                    <ul class="list-group">
+                        @foreach (var playlist in Model.SearchResults.Playlists)
+                        {
+                            if (playlist != null) 
+                            {
+                                var img = playlist.Images?.OrderByDescending(i => i.Width).FirstOrDefault()?.Url;
+                                <li class="list-group-item d-flex align-items-center">
+                                    @if (!string.IsNullOrEmpty(img))
+                                    {
+                                        <img src="@img" alt="@playlist.Name" width="48" height="48" class="rounded me-3" />
+                                    }
+                                    <div class="flex-fill">
+                                        <div><a href="/Playlist/@playlist.Id">@playlist.Name</a></div>
+                                        <div class="text-muted small">By @playlist.Owner.DisplayName</div>
+                                        <div class="text-muted small">@playlist.Tracks.Total tracks</div>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="text-center mt-5">
+        <h5 class="text-muted">Enter search criteria to find artists, tracks, albums, and playlists</h5>
+        <p class="text-muted">Use the advanced search options for more precise results</p>
+    </div>
+}
+
+<script>
+    function toggleAdvancedSearch() {
+        const advancedOptions = document.getElementById('advancedOptions');
+        const advancedInput = document.getElementById('advancedInput');
+        const toggleText = document.getElementById('toggleText');
+        
+        if (advancedOptions.style.display === 'none') {
+            advancedOptions.style.display = 'block';
+            advancedInput.value = 'true';
+            toggleText.textContent = 'Simple Search';
+        } else {
+            advancedOptions.style.display = 'none';
+            advancedInput.value = 'false';
+            toggleText.textContent = 'Advanced Search';
+        }
+    }
+</script>

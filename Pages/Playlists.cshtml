@@ -1,0 +1,91 @@
+@page
+@model SpotifyProject.Pages.PlaylistsModel
+@{
+    ViewData["Title"] = "Your Playlists";
+}
+
+<h2>Your Playlists</h2>
+
+<a asp-page="/PlaylistBuilder" class="btn btn-success mb-3">
+    + Create New Playlist
+</a>
+
+
+<input id="playlistSearchInput"
+       type="text"
+       class="form-control mb-4"
+       placeholder="Search your playlists..."
+       onkeyup="filterPlaylists()" />
+
+@if (Model.Playlists == null || !Model.Playlists.Any())
+{
+    <p class="text-muted">No playlists found.</p>
+}
+else
+{
+    <div id="playlistContainer" class="row row-cols-1 row-cols-md-2 g-3">
+        @foreach (var p in Model.Playlists)
+        {
+            <div class="col playlist-item">
+                <div class="card h-100">
+                    <div class="card-body d-flex align-items-center">
+                        @if (p.Images?.Any() == true)
+                        {
+                            <a href="/Playlist/@p.Id">
+                                <img src="@p.Images.First().Url"
+                                     alt="@p.Name"
+                                     width="64"
+                                     height="64"
+                                     class="me-3 rounded" />
+                            </a>
+                        }
+
+                        <div class="flex-fill">
+                            <h5 class="mb-1">
+                                <a href="/Playlist/@p.Id"
+                                   class="text-decoration-none">
+                                    @p.Name
+                                </a>
+                            </h5>
+
+                            <div class="text-muted small">By @p.Owner?.DisplayName</div>
+                            <div class="text-muted small">@((p.Tracks?.Total ?? 0)) items</div>
+                        </div>
+
+                        <div>
+                            @if (!string.IsNullOrEmpty(p.Id))
+                            {
+                                <a class="btn btn-sm btn-outline-success"
+                                   target="_blank"
+                                   rel="noopener"
+                                   href="https://open.spotify.com/playlist/@p.Id">
+                                    Open
+                                </a>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+<script>	// playlist search filter
+    function filterPlaylists() {
+        const input = document.getElementById("playlistSearchInput");
+        const filter = input.value.toLowerCase();
+        const items = document.getElementsByClassName("playlist-item");
+
+        for (let i = 0; i < items.length; i++) {
+            const text = items[i].innerText.toLowerCase();
+
+            if (text.includes(filter)) {
+                items[i].style.display = "";
+            } else {
+                items[i].style.display = "none";
+            }
+        }
+    }
+</script>
