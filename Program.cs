@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 using SpotifyAPI.Web;
 using SpotifyProject;
 using SpotifyProject.Models;
+using SpotifyProject.Options;
 using SpotifyProject.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -10,6 +13,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient();
+
+// Add controllers to the container.
+builder.Services.AddControllersWithViews();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -46,6 +54,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 // Options binding
 builder.Services.Configure<SpotifyOptions>(builder.Configuration.GetSection("Spotify"));
 
+// NEW: bind Gemini options
+builder.Services.Configure<GeminiOptions>(builder.Configuration.GetSection("Gemini"));
+
 // Base config for Spotify client
 builder.Services.AddSingleton(SpotifyClientConfig.CreateDefault());
 
@@ -54,6 +65,11 @@ builder.Services.AddScoped<SpotifyAuthService>();
 builder.Services.AddScoped<SpotifyClientFactory>();
 builder.Services.AddScoped<ISpotifySearchService, SpotifySearchService>();
 builder.Services.AddScoped<SpotifyService>();
+
+// NEW: Gemini service
+builder.Services.AddSingleton<GeminiService>();
+
+builder.Services.AddScoped<ChatbotService>();
 builder.Services.AddSingleton<ArtistMetricsService>();
 
 // Keep console logging available
@@ -86,5 +102,12 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 app.MapRazorPages();
+app.MapControllers();
+app.UseAuthentication();  // Must come before UseAuthorization
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
