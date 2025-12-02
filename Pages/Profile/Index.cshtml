@@ -5,7 +5,7 @@
 }
 
 <div class="container">
-    <h2 class="mb-4">Your Spotify Profile</h2>
+    <h2 class="mb-4 text-white">Your Spotify Profile</h2>
     
     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
     {
@@ -17,27 +17,35 @@
         <!-- User Profile Header -->
         <div class="row mb-4">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card spotify-card">
                     <div class="card-body d-flex align-items-center">
                         @if (Model.CurrentUser.Images?.Any() == true)
                         {
                             <img src="@Model.CurrentUser.Images.First().Url" 
                                  alt="Profile picture" 
                                  class="rounded-circle me-4" 
-                                 style="width: 100px; height: 100px;" />
+                                 style="width: 100px; height: 100px; border: 2px solid rgba(255,255,255,0.1);" />
                         }
                         <div>
-                            <h2 class="mb-0">@Model.CurrentUser.DisplayName</h2>
-                            <p class="text-muted">@Model.CurrentUser.Email</p>
-                            <div>
-                                <span class="badge bg-primary">@Model.CurrentUser.Followers.Total Followers</span>
+                            <h2 class="mb-0 text-white">@Model.CurrentUser.DisplayName</h2>
+                            <p class="text-muted mb-2" style="color: var(--entity-muted) !important;">@Model.CurrentUser.Email</p>
+                            <div class="mb-2">
+                                <span class="badge" style="background-color: var(--spotify-green); color: var(--spotify-white);">@Model.CurrentUser.Followers.Total Followers</span>
                                 @if (!string.IsNullOrEmpty(Model.CurrentUser.Country))
                                 {
-                                    <span class="badge bg-info">@Model.CurrentUser.Country</span>
+                                    <span class="badge" style="background: rgba(255,255,255,0.1); color: var(--spotify-white);">@Model.CurrentUser.Country</span>
                                 }
                                 @if (Model.CurrentUser.Product != null)
                                 {
-                                    <span class="badge bg-success">@Model.CurrentUser.Product</span>
+                                    <span class="badge" style="background: rgba(29,185,84,0.2); color: var(--spotify-white);">@Model.CurrentUser.Product</span>
+                                }
+                            </div>
+                            <div>
+                                @if (Model.CurrentUser.ExternalUrls?.ContainsKey("spotify") == true)
+                                {
+                                    <a href="@Model.CurrentUser.ExternalUrls["spotify"]" target="_blank" class="btn btn-outline-success btn-sm mt-2">
+                                        <i class="bi bi-spotify"></i> View on Spotify
+                                    </a>
                                 }
                             </div>
                         </div>
@@ -48,36 +56,36 @@
         
         <!-- Controls Section -->
         <div class="row mb-4">
-            <div class="col-md-6">
-                <h4>Listening Activity</h4>
+            <div class="col-md-6 mb-3">
+                <h4 class="text-white mb-3">Listening Activity</h4>
                 <div class="btn-group" role="group">
                     <a asp-page="./Index" asp-route-timeRange="short_term" asp-route-limit="@Model.Limit"
-                       class="btn @(Model.TimeRange == "short_term" ? "btn-primary" : "btn-outline-primary")">
+                       class="btn @(Model.TimeRange == "short_term" ? "spotify-btn" : "btn-outline-success")">
                         Last 4 Weeks
                     </a>
                     <a asp-page="./Index" asp-route-timeRange="medium_term" asp-route-limit="@Model.Limit"
-                       class="btn @(Model.TimeRange == "medium_term" ? "btn-primary" : "btn-outline-primary")">
+                       class="btn @(Model.TimeRange == "medium_term" ? "spotify-btn" : "btn-outline-success")">
                         Last 6 Months
                     </a>
                     <a asp-page="./Index" asp-route-timeRange="long_term" asp-route-limit="@Model.Limit"
-                       class="btn @(Model.TimeRange == "long_term" ? "btn-primary" : "btn-outline-primary")">
+                       class="btn @(Model.TimeRange == "long_term" ? "spotify-btn" : "btn-outline-success")">
                         All Time
                     </a>
                 </div>
             </div>
-            <div class="col-md-6">
-                <h4>Display Options</h4>
+            <div class="col-md-6 mb-3">
+                <h4 class="text-white mb-3">Display Options</h4>
                 <div class="btn-group" role="group">
                     <a asp-page="./Index" asp-route-timeRange="@Model.TimeRange" asp-route-limit="10"
-                       class="btn @(Model.Limit == 10 ? "btn-success" : "btn-outline-success")">
+                       class="btn @(Model.Limit == 10 ? "spotify-btn" : "btn-outline-success")">
                         Top 10
                     </a>
                     <a asp-page="./Index" asp-route-timeRange="@Model.TimeRange" asp-route-limit="50"
-                       class="btn @(Model.Limit == 50 ? "btn-success" : "btn-outline-success")">
+                       class="btn @(Model.Limit == 50 ? "spotify-btn" : "btn-outline-success")">
                         Top 50
                     </a>
                 </div>
-                <small class="text-muted d-block mt-1">
+                <small class="d-block mt-2" style="color: var(--entity-muted);">
                     Currently showing top @Model.Limit items
                 </small>
             </div>
@@ -87,11 +95,11 @@
         <div class="row">
             <!-- Top Tracks -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Your Top Tracks (@Model.TopTracks?.Items?.Count ?? 0)</h5>
+                <div class="card h-100 spotify-card">
+                    <div class="card-header text-white" style="background: var(--spotify-green); border: none;">
+                        <h5 class="mb-0"><i class="bi bi-music-note me-2"></i>Your Top Tracks (@Model.TopTracks?.Items?.Count ?? 0)</h5>
                     </div>
-                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto; background: rgba(255,255,255,0.02);">
                         @if (Model.TopTracks?.Items?.Any() == true)
                         {
                             <ol class="list-group list-group-numbered">
@@ -99,15 +107,15 @@
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            <div class="fw-bold"><a href="/Track/@track.Id">@track.Name</a></div>
+                                            <div class="fw-bold text-white"><a href="/Track/@track.Id" style="color: var(--spotify-white);">@track.Name</a></div>
                                             @if (track.Artists?.Any() == true)
                                             {
-                                                <small><a href="/Artists/Details/@track.Artists.First().Id">@track.Artists.First().Name</a></small>
+                                                <small><a href="/Artists/Details/@track.Artists.First().Id" style="color: var(--entity-muted);">@track.Artists.First().Name</a></small>
                                             }
                                         </div>
                                         @if (track.Album?.Images?.Any() == true)
                                         {
-                                            <a href="/Album/@track.Album.Id"><img src="@track.Album.Images.Last().Url" width="40" height="40" class="rounded" alt="@track.Album.Name" /></a>
+                                            <a href="/Album/@track.Album.Id"><img src="@track.Album.Images.Last().Url" width="40" height="40" class="rounded" alt="@track.Album.Name" style="border: 1px solid rgba(255,255,255,0.1);" /></a>
                                         }
                                     </li>
                                 }
@@ -115,7 +123,7 @@
                         }
                         else
                         {
-                            <p class="text-muted">No top tracks data available.</p>
+                            <p style="color: var(--entity-muted);">No top tracks data available.</p>
                         }
                     </div>
                 </div>
@@ -123,11 +131,11 @@
             
             <!-- Top Artists -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">Your Top Artists (@Model.TopArtists?.Items?.Count ?? 0)</h5>
+                <div class="card h-100 spotify-card">
+                    <div class="card-header text-white" style="background: var(--spotify-green); border: none;">
+                        <h5 class="mb-0"><i class="bi bi-person me-2"></i>Your Top Artists (@Model.TopArtists?.Items?.Count ?? 0)</h5>
                     </div>
-                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto; background: rgba(255,255,255,0.02);">
                         @if (Model.TopArtists?.Items?.Any() == true)
                         {
                             <ol class="list-group list-group-numbered">
@@ -135,15 +143,15 @@
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            <div class="fw-bold"><a href="/Artists/Details/@artist.Id">@artist.Name</a></div>
+                                            <div class="fw-bold text-white"><a href="/Artists/Details/@artist.Id" style="color: var(--spotify-white);">@artist.Name</a></div>
                                             @if (artist.Genres?.Any() == true)
                                             {
-                                                <small class="text-muted">@string.Join(", ", artist.Genres.Take(2))</small>
+                                                <small style="color: var(--entity-muted);">@string.Join(", ", artist.Genres.Take(2))</small>
                                             }
                                         </div>
                                         @if (artist.Images?.Any() == true)
                                         {
-                                            <a href="/Artists/Details/@artist.Id"><img src="@artist.Images.Last().Url" width="40" height="40" class="rounded-circle" alt="@artist.Name" /></a>
+                                            <a href="/Artists/Details/@artist.Id"><img src="@artist.Images.Last().Url" width="40" height="40" class="rounded-circle" alt="@artist.Name" style="border: 1px solid rgba(255,255,255,0.1);" /></a>
                                         }
                                     </li>
                                 }
@@ -151,7 +159,7 @@
                         }
                         else
                         {
-                            <p class="text-muted">No top artists data available.</p>
+                            <p style="color: var(--entity-muted);">No top artists data available.</p>
                         }
                     </div>
                 </div>
@@ -159,11 +167,11 @@
             
             <!-- Top Albums -->
             <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">Your Top Albums (@Model.TopAlbums?.Count ?? 0)</h5>
+                <div class="card h-100 spotify-card">
+                    <div class="card-header text-white" style="background: var(--spotify-green); border: none;">
+                        <h5 class="mb-0"><i class="bi bi-disc me-2"></i>Your Top Albums (@Model.TopAlbums?.Count ?? 0)</h5>
                     </div>
-                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto; background: rgba(255,255,255,0.02);">
                         @if (Model.TopAlbums?.Any() == true)
                         {
                             <ol class="list-group list-group-numbered">
@@ -171,15 +179,15 @@
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto">
-                                            <div class="fw-bold"><a href="/Album/@album.Id">@album.Name</a></div>
+                                            <div class="fw-bold text-white"><a href="/Album/@album.Id" style="color: var(--spotify-white);">@album.Name</a></div>
                                             @if (album.Artists?.Any() == true)
                                             {
-                                                <small class="text-muted"><a href="/Artists/Details/@album.Artists.First().Id">@album.Artists.First().Name</a></small>
+                                                <small><a href="/Artists/Details/@album.Artists.First().Id" style="color: var(--entity-muted);">@album.Artists.First().Name</a></small>
                                             }
                                         </div>
                                         @if (album.Images?.Any() == true)
                                         {
-                                            <a href="/Album/@album.Id"><img src="@album.Images.Last().Url" width="40" height="40" class="rounded" alt="@album.Name" /></a>
+                                            <a href="/Album/@album.Id"><img src="@album.Images.Last().Url" width="40" height="40" class="rounded" alt="@album.Name" style="border: 1px solid rgba(255,255,255,0.1);" /></a>
                                         }
                                     </li>
                                 }
@@ -187,7 +195,7 @@
                         }
                         else
                         {
-                            <p class="text-muted">No top albums data available.</p>
+                            <p style="color: var(--entity-muted);">No top albums data available.</p>
                         }
                     </div>
                 </div>

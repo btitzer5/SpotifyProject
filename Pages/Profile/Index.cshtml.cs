@@ -26,17 +26,19 @@ namespace SpotifyProject.Pages.Profile
         public int Limit { get; set; } = 10;
         public string ErrorMessage { get; set; }
 
+        public int followersCount;
+
         public async Task OnGetAsync(string timeRange = "medium_term", int limit = 10)
         {
             TimeRange = timeRange;
             // Cap the limit at 50 (Spotify's maximum)
             Limit = Math.Min(limit, 50);
-            
+           
             try
             {
                 // Get current user profile
                 CurrentUser = await _spotifyService.GetCurrentUserProfile();
-                
+
                 // Get user's top tracks with the capped limit
                 TopTracks = await _spotifyService.GetUserTopTracks(limit: Limit, timeRange: TimeRange);
                 

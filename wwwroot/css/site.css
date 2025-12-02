@@ -406,8 +406,8 @@ a:hover {
 /* Inputs: subtle dark background, visible text */
 .search-card .form-control,
 .search-card .form-select {
-    background: rgba(255,255,255,0.01);
-    color: var(--spotify-white);
+    background: #333333;
+    color: var(rgba(29,185,84,0.06));
     border: 1px solid var(--card-border);
 }
 
@@ -455,7 +455,7 @@ a:hover {
 .search-card .form-control,
 .search-card .form-select {
   color: var(--spotify-white) !important;
-  background: rgba(255,255,255,0.02) !important;
+  background: rgba(rgba(255,255,255,0.06)) !important;
   border: 1px solid var(--card-border) !important;
 }
 
