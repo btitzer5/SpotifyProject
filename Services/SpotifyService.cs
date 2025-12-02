@@ -24,7 +24,7 @@ namespace SpotifyProject.Services
         // App-only client (public endpoints)
         private SpotifyClient GetAppClient() => _spotifyClientFactory.CreateAppClient();
 
-        // User-authenticated client (private endpoints) — will throw if user not authenticated
+        // User-authenticated client (private endpoints) � will throw if user not authenticated
         private SpotifyClient GetUserClient() => _spotifyClientFactory.CreateUserClient();
 
         // USER-SPECIFIC endpoints (require authenticated user)
@@ -37,14 +37,14 @@ namespace SpotifyProject.Services
         public async Task<Paging<FullTrack>> GetUserTopTracks(int limit = 10, string timeRange = "medium_term")
         {
             var spotify = GetUserClient();
-
+            
             try
             {
                 var request = new PersonalizationTopRequest();
                 request.Limit = limit;
                 var requestType = request.GetType();
                 var properties = requestType.GetProperties();
-
+                
                 foreach (var prop in properties)
                 {
                     if (prop.Name.ToLower().Contains("time") || prop.Name.ToLower().Contains("range"))
@@ -59,9 +59,9 @@ namespace SpotifyProject.Services
                             {
                                 var enumType = prop.PropertyType.IsGenericType ? prop.PropertyType.GetGenericArguments()[0] : prop.PropertyType;
                                 var enumNames = Enum.GetNames(enumType);
-                                var matchingEnum = enumNames.FirstOrDefault(name =>
+                                var matchingEnum = enumNames.FirstOrDefault(name => 
                                     name.ToLower().Contains(timeRange.Replace("_", "").Replace("-", "")));
-
+                                
                                 if (matchingEnum != null)
                                 {
                                     var enumValue = Enum.Parse(enumType, matchingEnum);
@@ -74,7 +74,7 @@ namespace SpotifyProject.Services
                         }
                     }
                 }
-
+                
                 return await spotify.Personalization.GetTopTracks(request);
             }
             catch (Exception ex)
@@ -86,14 +86,14 @@ namespace SpotifyProject.Services
         public async Task<Paging<FullArtist>> GetUserTopArtists(int limit = 10, string timeRange = "medium_term")
         {
             var spotify = GetUserClient();
-
+            
             try
             {
                 var request = new PersonalizationTopRequest();
                 request.Limit = limit;
                 var requestType = request.GetType();
                 var properties = requestType.GetProperties();
-
+                
                 foreach (var prop in properties)
                 {
                     if (prop.Name.ToLower().Contains("time") || prop.Name.ToLower().Contains("range"))
@@ -108,9 +108,9 @@ namespace SpotifyProject.Services
                             {
                                 var enumType = prop.PropertyType.IsGenericType ? prop.PropertyType.GetGenericArguments()[0] : prop.PropertyType;
                                 var enumNames = Enum.GetNames(enumType);
-                                var matchingEnum = enumNames.FirstOrDefault(name =>
+                                var matchingEnum = enumNames.FirstOrDefault(name => 
                                     name.ToLower().Contains(timeRange.Replace("_", "").Replace("-", "")));
-
+                                
                                 if (matchingEnum != null)
                                 {
                                     var enumValue = Enum.Parse(enumType, matchingEnum);
@@ -123,7 +123,7 @@ namespace SpotifyProject.Services
                         }
                     }
                 }
-
+                
                 return await spotify.Personalization.GetTopArtists(request);
             }
             catch (Exception ex)

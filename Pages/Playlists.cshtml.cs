@@ -56,8 +56,8 @@ public class PlaylistsModel : PageModel
             if (apiEx.Response != null && 
                 (apiEx.Response.StatusCode == HttpStatusCode.Unauthorized || apiEx.Response.StatusCode == HttpStatusCode.Forbidden))
             {
-                return RedirectToPage("/Auth/Login");
-            }
+            return RedirectToPage("/Auth/Login");
+        }
 
             // Show friendly message / status code to developer
             return StatusCode(502, $"Spotify API error: {apiEx.Message}");

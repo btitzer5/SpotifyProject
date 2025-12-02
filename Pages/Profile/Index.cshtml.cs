@@ -26,6 +26,8 @@ namespace SpotifyProject.Pages.Profile
         public int Limit { get; set; } = 10;
         public string ErrorMessage { get; set; }
 
+        public int followersCount;
+
         public async Task OnGetAsync(string timeRange = "medium_term", int limit = 10)
         {
             TimeRange = timeRange;

@@ -22,9 +22,9 @@ public class CallbackModel : PageModel
         try
         {
             _logger.LogInformation("Callback handler invoked. code present: {HasCode}, state: {State}", !string.IsNullOrEmpty(code), state);
-            await _auth.StoreTokensFromCallbackAsync(code, state);
-            return RedirectToPage("/Playlists");
-        }
+        await _auth.StoreTokensFromCallbackAsync(code, state);
+        return RedirectToPage("/Playlists");
+    }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error handling Spotify callback. state={State}", state);

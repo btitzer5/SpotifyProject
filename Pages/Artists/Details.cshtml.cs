@@ -40,10 +40,10 @@ public class DetailsModel : PageModel
 
         // Fetch a small first page of albums to populate the Albums list 
         var albumsPage = await spotify.Artists.GetAlbums(id, new ArtistsAlbumsRequest
-        {
-            IncludeGroupsParam = ArtistsAlbumsRequest.IncludeGroups.Album | ArtistsAlbumsRequest.IncludeGroups.Single,
-            Limit = 20
-        });
+            {
+                IncludeGroupsParam = ArtistsAlbumsRequest.IncludeGroups.Album | ArtistsAlbumsRequest.IncludeGroups.Single,
+                Limit = 20
+            });
         Albums = albumsPage.Items?.ToList() ?? new List<SimpleAlbum>();
 
    
