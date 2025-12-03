@@ -368,4 +368,4 @@ FodyWeavers.xsd
 **/obj/**/appsettings.json
 bin/
 obj/
-.appsettings.json
+SpotifyProject/appsettings.json
