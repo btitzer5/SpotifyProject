@@ -362,3 +362,10 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /DataProtection-Keys
+
+# Hiding appsettings
+**/bin/**/appsettings.json
+**/obj/**/appsettings.json
+bin/
+obj/
+SpotifyProject/appsettings.json
